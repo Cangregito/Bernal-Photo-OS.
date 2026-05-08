@@ -17,24 +17,34 @@ interface ContractRow {
 
 export class SupabaseContractRepository implements ContractRepository {
   async getAll(): Promise<Contract[]> {
-    const { data, error } = await supabase
-      .from('contracts')
-      .select('*')
-      .order('created_at', { ascending: false });
+    try {
+      const { data, error } = await supabase
+        .from('contracts')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-    if (error) throw new Error(error.message);
-    return (data as unknown as ContractRow[]).map(this.mapToContract);
+      if (error) throw new Error(error.message);
+      return (data as unknown as ContractRow[]).map(this.mapToContract);
+    } catch (err: any) {
+      console.warn('SupabaseContractRepository: Error fetch', err.message);
+      return [];
+    }
   }
 
   async getByClientId(clientId: string): Promise<Contract[]> {
-    const { data, error } = await supabase
-      .from('contracts')
-      .select('*')
-      .eq('client_id', clientId)
-      .order('created_at', { ascending: false });
+    try {
+      const { data, error } = await supabase
+        .from('contracts')
+        .select('*')
+        .eq('client_id', clientId)
+        .order('created_at', { ascending: false });
 
-    if (error) throw new Error(error.message);
-    return (data as unknown as ContractRow[]).map(this.mapToContract);
+      if (error) throw new Error(error.message);
+      return (data as unknown as ContractRow[]).map(this.mapToContract);
+    } catch (err: any) {
+      console.warn('SupabaseContractRepository: Error fetch', err.message);
+      return [];
+    }
   }
 
   async getById(id: string): Promise<Contract | null> {

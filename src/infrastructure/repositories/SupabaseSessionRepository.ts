@@ -16,24 +16,34 @@ interface SessionRow {
 
 export class SupabaseSessionRepository implements SessionRepository {
   async getAll(): Promise<Session[]> {
-    const { data, error } = await supabase
-      .from('sessions')
-      .select('*')
-      .order('date', { ascending: true });
+    try {
+      const { data, error } = await supabase
+        .from('sessions')
+        .select('*')
+        .order('date', { ascending: true });
 
-    if (error) throw new Error(error.message);
-    return (data as unknown as SessionRow[]).map(this.mapToSession);
+      if (error) throw new Error(error.message);
+      return (data as unknown as SessionRow[]).map(this.mapToSession);
+    } catch (err: any) {
+      console.warn('SupabaseSessionRepository: Error fetch', err.message);
+      return [];
+    }
   }
 
   async getByClientId(clientId: string): Promise<Session[]> {
-    const { data, error } = await supabase
-      .from('sessions')
-      .select('*')
-      .eq('client_id', clientId)
-      .order('date', { ascending: true });
+    try {
+      const { data, error } = await supabase
+        .from('sessions')
+        .select('*')
+        .eq('client_id', clientId)
+        .order('date', { ascending: true });
 
-    if (error) throw new Error(error.message);
-    return (data as unknown as SessionRow[]).map(this.mapToSession);
+      if (error) throw new Error(error.message);
+      return (data as unknown as SessionRow[]).map(this.mapToSession);
+    } catch (err: any) {
+      console.warn('SupabaseSessionRepository: Error fetch', err.message);
+      return [];
+    }
   }
 
   async getById(id: string): Promise<Session | null> {

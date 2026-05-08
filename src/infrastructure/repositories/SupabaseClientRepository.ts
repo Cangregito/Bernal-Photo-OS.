@@ -15,24 +15,34 @@ interface ClientRow {
 
 export class SupabaseClientRepository implements ClientRepository {
   async getAll(): Promise<Client[]> {
-    const { data, error } = await supabase
-      .from('clients')
-      .select('*')
-      .order('created_at', { ascending: false });
+    try {
+      const { data, error } = await supabase
+        .from('clients')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-    if (error) throw new Error(error.message);
-    return (data as unknown as ClientRow[]).map(this.mapToClient);
+      if (error) throw new Error(error.message);
+      return (data as unknown as ClientRow[]).map(this.mapToClient);
+    } catch (err: any) {
+      console.warn('SupabaseClientRepository: Error fetch (¿.env configurado?)', err.message);
+      return [];
+    }
   }
 
   async getById(id: string): Promise<Client | null> {
-    const { data, error } = await supabase
-      .from('clients')
-      .select('*')
-      .eq('id', id)
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from('clients')
+        .select('*')
+        .eq('id', id)
+        .single();
 
-    if (error) return null;
-    return this.mapToClient(data as unknown as ClientRow);
+      if (error) return null;
+      return this.mapToClient(data as unknown as ClientRow);
+    } catch (err: any) {
+      console.warn('SupabaseClientRepository: Error fetch', err.message);
+      return null;
+    }
   }
 
   async create(clientData: Omit<Client, 'id' | 'createdAt' | 'updatedAt'>): Promise<Client> {

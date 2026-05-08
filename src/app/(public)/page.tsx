@@ -1,7 +1,8 @@
+import Link from 'next/link';
 import { PublicNavbar } from '@/presentation/components/public/PublicNavbar';
 import { HeroSection } from '@/presentation/components/public/HeroSection';
 import { MasonryGallery } from '@/presentation/components/public/MasonryGallery';
-
+import { AboutPhotographerSection } from '@/presentation/components/public/AboutPhotographerSection';
 import { supabase } from '@/infrastructure/supabase/client';
 
 // Fallback data en caso de que la DB no esté conectada aún
@@ -35,28 +36,25 @@ export default async function PublicPortfolioPage() {
       <PublicNavbar />
       <HeroSection />
       
-      {/* Intro Quote Section */}
-      <section className="py-24 px-4 text-center max-w-4xl mx-auto">
-        <h2 className="text-3xl md:text-5xl font-serif text-foreground leading-tight mb-8">
-          Capturando la magia de tu boda, <br />
-          <span className="italic">un momento a la vez</span>
-        </h2>
-        <p className="text-foreground/70 text-lg md:text-xl font-light">
-          Capturando el amor, la alegría y la magia de su gran día, preservando
-          recuerdos eternos para atesorar por siempre
-        </p>
-      </section>
+      <AboutPhotographerSection />
 
-      <MasonryGallery images={images} />
-      
-      {/* Call to action footer */}
-      <section className="py-32 bg-primary flex flex-col items-center justify-center text-center px-4" id="pricing">
-        <h2 className="text-4xl md:text-5xl font-serif text-primary-foreground mb-8">
-          ¿Listos para contar su historia?
+      {/* Portfolio Call to Action */}
+      <section className="py-24 bg-background flex flex-col items-center justify-center text-center px-4">
+        <h2 className="text-4xl md:text-5xl font-serif text-foreground mb-8">
+          Colección de Memorias
         </h2>
-        <button className="bg-primary-foreground text-primary px-10 py-4 rounded-full text-lg font-medium hover:scale-105 transition-transform shadow-xl">
-          Reservar Ahora
-        </button>
+        <p className="text-foreground/70 text-lg md:text-xl font-light mb-12 max-w-2xl">
+          Explora nuestras historias editoriales y descubre cómo capturamos la esencia de cada momento con elegancia y atemporalidad.
+        </p>
+        <Link 
+          href="/portfolio"
+          className="group relative px-10 py-4 overflow-hidden border border-foreground/20 rounded-sm hover:border-foreground transition-colors"
+        >
+          <span className="relative z-10 text-sm font-medium tracking-[0.2em] uppercase text-foreground group-hover:text-background transition-colors duration-500">
+            Ver Portafolio
+          </span>
+          <div className="absolute inset-0 h-full w-full bg-foreground -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out" />
+        </Link>
       </section>
     </main>
   );

@@ -1,5 +1,9 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import { LayoutDashboard, Users, Camera, FileText, Settings, LogOut } from 'lucide-react';
+import { createBrowserClient } from '@supabase/ssr';
 
 const navigation = [
   { name: 'Overview', href: '/dashboard', icon: LayoutDashboard },
@@ -10,6 +14,24 @@ const navigation = [
 ];
 
 export function Sidebar() {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (supabaseUrl && supabaseAnonKey && supabaseUrl !== 'https://dummy.supabase.co') {
+      const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);
+      await supabase.auth.signOut();
+    }
+    router.push('/login');
+  };
+
+  const isActive = (href: string) => {
+    if (href === '/dashboard') return pathname === '/dashboard';
+    return pathname.startsWith(href);
+  };
+
   return (
     <aside className="w-64 flex-shrink-0 glass-panel border-r border-white/5 flex flex-col hidden md:flex">
       {/* Brand */}
@@ -23,14 +45,22 @@ export function Sidebar() {
       <nav className="flex-1 px-4 py-6 space-y-1">
         {navigation.map((item) => {
           const Icon = item.icon;
+          const active = isActive(item.href);
           return (
             <Link
               key={item.name}
               href={item.href}
-              className="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-white/70 hover:text-white hover:bg-white/5 transition-colors group"
+              className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors group ${
+                active
+                  ? 'bg-white/10 text-white'
+                  : 'text-white/70 hover:text-white hover:bg-white/5'
+              }`}
             >
-              <Icon className="w-5 h-5 mr-3 text-white/50 group-hover:text-white transition-colors" />
+              <Icon className={`w-5 h-5 mr-3 transition-colors ${
+                active ? 'text-emerald-400' : 'text-white/50 group-hover:text-white'
+              }`} />
               {item.name}
+              {active && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-400" />}
             </Link>
           );
         })}
@@ -38,11 +68,23 @@ export function Sidebar() {
 
       {/* Bottom Section */}
       <div className="p-4 border-t border-white/5 space-y-1">
-        <button className="w-full flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-white/70 hover:text-white hover:bg-white/5 transition-colors group">
-          <Settings className="w-5 h-5 mr-3 text-white/50 group-hover:text-white transition-colors" />
+        <Link
+          href="/dashboard/settings"
+          className={`w-full flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors group ${
+            isActive('/dashboard/settings')
+              ? 'bg-white/10 text-white'
+              : 'text-white/70 hover:text-white hover:bg-white/5'
+          }`}
+        >
+          <Settings className={`w-5 h-5 mr-3 transition-colors ${
+            isActive('/dashboard/settings') ? 'text-emerald-400' : 'text-white/50 group-hover:text-white'
+          }`} />
           Settings
-        </button>
-        <button className="w-full flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-red-400/70 hover:text-red-400 hover:bg-red-400/10 transition-colors group">
+        </Link>
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-red-400/70 hover:text-red-400 hover:bg-red-400/10 transition-colors group cursor-pointer"
+        >
           <LogOut className="w-5 h-5 mr-3 text-red-400/50 group-hover:text-red-400 transition-colors" />
           Logout
         </button>

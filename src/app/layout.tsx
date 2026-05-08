@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/presentation/providers/ThemeProvider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -23,9 +24,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${inter.variable} ${playfair.variable} h-full antialiased`}>
-      <body className="h-full font-sans bg-background text-foreground">
-        {children}
+    <html lang="es" className={`${inter.variable} ${playfair.variable} h-full antialiased`} suppressHydrationWarning>
+      <body className="h-full font-sans bg-background text-foreground transition-colors duration-300">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

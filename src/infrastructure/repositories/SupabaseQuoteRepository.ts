@@ -17,24 +17,34 @@ interface QuoteRow {
 
 export class SupabaseQuoteRepository implements QuoteRepository {
   async getAll(): Promise<Quote[]> {
-    const { data, error } = await supabase
-      .from('quotes')
-      .select('*')
-      .order('created_at', { ascending: false });
+    try {
+      const { data, error } = await supabase
+        .from('quotes')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-    if (error) throw new Error(error.message);
-    return (data as unknown as QuoteRow[]).map(this.mapToQuote);
+      if (error) throw new Error(error.message);
+      return (data as unknown as QuoteRow[]).map(this.mapToQuote);
+    } catch (err: any) {
+      console.warn('SupabaseQuoteRepository: Error fetch', err.message);
+      return [];
+    }
   }
 
   async getByClientId(clientId: string): Promise<Quote[]> {
-    const { data, error } = await supabase
-      .from('quotes')
-      .select('*')
-      .eq('client_id', clientId)
-      .order('created_at', { ascending: false });
+    try {
+      const { data, error } = await supabase
+        .from('quotes')
+        .select('*')
+        .eq('client_id', clientId)
+        .order('created_at', { ascending: false });
 
-    if (error) throw new Error(error.message);
-    return (data as unknown as QuoteRow[]).map(this.mapToQuote);
+      if (error) throw new Error(error.message);
+      return (data as unknown as QuoteRow[]).map(this.mapToQuote);
+    } catch (err: any) {
+      console.warn('SupabaseQuoteRepository: Error fetch', err.message);
+      return [];
+    }
   }
 
   async getById(id: string): Promise<Quote | null> {
@@ -57,14 +67,16 @@ export class SupabaseQuoteRepository implements QuoteRepository {
         items: quoteData.items,
         total_amount: quoteData.totalAmount,
         status: quoteData.status,
-        valid_until: quoteData.validUntil.toISOString(),
         notes: quoteData.notes
+        // valid_until omitted — column not yet in DB schema
       })
       .select()
       .single();
 
     if (error) throw new Error(error.message);
-    return this.mapToQuote(data as unknown as QuoteRow);
+    // Inject the validUntil from the domain (not persisted yet)
+    const mapped = this.mapToQuote(data as unknown as QuoteRow);
+    return { ...mapped, validUntil: quoteData.validUntil };
   }
 
   async update(id: string, quoteData: Partial<Quote>): Promise<Quote> {
@@ -113,7 +125,7 @@ export class SupabaseQuoteRepository implements QuoteRepository {
       items: row.items || [],
       totalAmount: row.total_amount,
       status: row.status,
-      validUntil: new Date(row.valid_until),
+      validUntil: row.valid_until ? new Date(row.valid_until) : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
       notes: row.notes,
       createdAt: new Date(row.created_at),
       updatedAt: new Date(row.updated_at),
