@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Bell, Search, LogOut, Settings, User, ChevronDown, Camera, FileSignature, Calendar, X } from 'lucide-react';
+import { Bell, Search, LogOut, Settings, User, ChevronDown, FileSignature, Calendar, X } from 'lucide-react';
 import { createBrowserClient } from '@supabase/ssr';
 
 interface Notification {
@@ -21,13 +21,13 @@ export function Header() {
   const [showProfile, setShowProfile] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [loadingNotifs, setLoadingNotifs] = useState(false);
+  const [_loadingNotifs, setLoadingNotifs] = useState(false); // eslint-disable-line @typescript-eslint/no-unused-vars
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   const hasSupabase = supabaseUrl && supabaseAnonKey && supabaseUrl !== 'https://dummy.supabase.co';
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     if (!hasSupabase) return;
     setLoadingNotifs(true);
     try {
@@ -89,13 +89,16 @@ export function Header() {
     } finally {
       setLoadingNotifs(false);
     }
-  };
+  }, [hasSupabase, supabaseUrl, supabaseAnonKey]);
 
   useEffect(() => {
-    fetchNotifications();
-    const interval = setInterval(fetchNotifications, 60000); // Refresh every minute
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchNotifications().catch(err => console.error('Initial fetch failed:', err));
+    const interval = setInterval(() => {
+      fetchNotifications().catch(err => console.error('Interval fetch failed:', err));
+    }, 60000);
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchNotifications]);
 
   const handleLogout = async () => {
     if (hasSupabase) {

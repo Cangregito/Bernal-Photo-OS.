@@ -194,7 +194,7 @@ export function ContractTable({ contracts: initialContracts, clients, quotes }: 
           signedAt: contract.signedAt,
           createdAt: contract.createdAt,
         }
-      })).toBlob();
+      }) as any).toBlob(); // eslint-disable-line @typescript-eslint/no-explicit-any
 
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');

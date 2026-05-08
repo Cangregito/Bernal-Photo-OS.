@@ -33,9 +33,10 @@ export async function createContractAction(formData: {
     });
     revalidatePath('/dashboard/contracts');
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
     console.error('Error creating contract:', error);
-    return { success: false, error: error.message };
+    return { success: false, error: message };
   }
 }
 
@@ -71,8 +72,9 @@ export async function createSessionFromContractAction(contractId: string, overri
         location: locationStr || undefined,
         notes: `Sesión creada desde contrato firmado (ID: ${contractId})`,
       });
-    } catch (locErr: any) {
-      if (locErr.message?.includes('location')) {
+    } catch (locErr: unknown) {
+      const locMessage = locErr instanceof Error ? locErr.message : String(locErr);
+      if (locMessage.includes('location')) {
         // Retry without location (column not yet migrated)
         await sessionRepository.create({
           clientId: contract.clientId,
@@ -89,9 +91,10 @@ export async function createSessionFromContractAction(contractId: string, overri
     revalidatePath('/dashboard/sessions');
     revalidatePath('/dashboard/contracts');
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
     console.error('Error creating session from contract:', error);
-    return { success: false, error: error.message };
+    return { success: false, error: message };
   }
 }
 
@@ -200,8 +203,9 @@ export async function sendContractLinkAction(contractId: string) {
 
     revalidatePath('/dashboard/contracts');
     return { success: true, signingUrl };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
     console.error('Error sending contract link:', error);
-    return { success: false, error: error.message };
+    return { success: false, error: message };
   }
 }

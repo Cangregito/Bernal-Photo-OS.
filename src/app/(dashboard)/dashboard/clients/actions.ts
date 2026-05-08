@@ -17,8 +17,9 @@ export async function createClientAction(formData: {
     revalidatePath('/dashboard/clients');
     revalidatePath('/dashboard/sessions'); // Also revalidate sessions since it needs clients
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
     console.error('Error creating client:', error);
-    return { success: false, error: error.message };
+    return { success: false, error: message };
   }
 }

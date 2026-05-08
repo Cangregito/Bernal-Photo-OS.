@@ -68,7 +68,7 @@ function formatCurrency(amount: number) {
 }
 
 export function DashboardPanel({ data }: { data: DashboardData }) {
-  const today = new Date();
+  const today = useMemo(() => new Date(), []);
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -137,10 +137,12 @@ export function DashboardPanel({ data }: { data: DashboardData }) {
   ];
 
   // ─── Upcoming sessions ────────────────────────────────────
-  const upcomingSessions = data.sessions
-    .filter(s => new Date(s.date) >= today && s.status !== 'cancelled')
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-    .slice(0, 4);
+  const upcomingSessions = useMemo(() => {
+    return data.sessions
+      .filter(s => new Date(s.date) >= today && s.status !== 'cancelled')
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      .slice(0, 4);
+  }, [data.sessions, today]);
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">

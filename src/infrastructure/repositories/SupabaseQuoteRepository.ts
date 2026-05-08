@@ -25,8 +25,9 @@ export class SupabaseQuoteRepository implements QuoteRepository {
 
       if (error) throw new Error(error.message);
       return (data as unknown as QuoteRow[]).map(this.mapToQuote);
-    } catch (err: any) {
-      console.warn('SupabaseQuoteRepository: Error fetch', err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.warn('SupabaseQuoteRepository: Error fetch', message);
       return [];
     }
   }
@@ -41,8 +42,9 @@ export class SupabaseQuoteRepository implements QuoteRepository {
 
       if (error) throw new Error(error.message);
       return (data as unknown as QuoteRow[]).map(this.mapToQuote);
-    } catch (err: any) {
-      console.warn('SupabaseQuoteRepository: Error fetch', err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.warn('SupabaseQuoteRepository: Error fetch', message);
       return [];
     }
   }
@@ -80,7 +82,7 @@ export class SupabaseQuoteRepository implements QuoteRepository {
   }
 
   async update(id: string, quoteData: Partial<Quote>): Promise<Quote> {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('quotes')
       .select('*')
       .eq('id', id)

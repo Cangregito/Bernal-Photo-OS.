@@ -25,8 +25,9 @@ export class SupabaseContractRepository implements ContractRepository {
 
       if (error) throw new Error(error.message);
       return (data as unknown as ContractRow[]).map(this.mapToContract);
-    } catch (err: any) {
-      console.warn('SupabaseContractRepository: Error fetch', err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.warn('SupabaseContractRepository: Error fetch', message);
       return [];
     }
   }
@@ -41,8 +42,9 @@ export class SupabaseContractRepository implements ContractRepository {
 
       if (error) throw new Error(error.message);
       return (data as unknown as ContractRow[]).map(this.mapToContract);
-    } catch (err: any) {
-      console.warn('SupabaseContractRepository: Error fetch', err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.warn('SupabaseContractRepository: Error fetch', message);
       return [];
     }
   }

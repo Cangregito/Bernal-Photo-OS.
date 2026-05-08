@@ -55,8 +55,9 @@ export default function SignContractPage({ params }: { params: Promise<{ token: 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Error al firmar');
       setSigned(true);
-    } catch (e: any) {
-      setSignError(e.message || 'Error al procesar la firma. Intenta de nuevo.');
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Error al procesar la firma. Intenta de nuevo.';
+      setSignError(message);
     } finally {
       setSigning(false);
     }

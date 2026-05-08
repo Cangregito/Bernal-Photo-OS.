@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { PublicNavbar } from '@/presentation/components/public/PublicNavbar';
 
-export default function StoryPage({ params }: { params: { id: string } }) {
+export default function StoryPage({ params: _params }: { params: { id: string } }) { // eslint-disable-line @typescript-eslint/no-unused-vars
   // En un entorno real, usaríamos params.id para buscar la historia en Supabase.
   // Por ahora, mostraremos el contenido solicitado con la estética deseada.
   

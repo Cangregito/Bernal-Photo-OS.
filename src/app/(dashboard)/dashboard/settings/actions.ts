@@ -1,6 +1,6 @@
 'use server';
 
-import { createClient } from '@supabase/supabase-js';
+
 
 export async function sendTestEmailAction(type: 'summary' | 'reminder' | 'alert') {
   const resendApiKey = process.env.RESEND_API_KEY;
@@ -75,7 +75,8 @@ export async function sendTestEmailAction(type: 'summary' | 'reminder' | 'alert'
 
     if (!response.ok) throw new Error('Error al enviar con Resend');
     return { success: true };
-  } catch (err: any) {
-    return { success: false, error: err.message };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    return { success: false, error: message };
   }
 }

@@ -81,9 +81,10 @@ export async function POST(request: NextRequest) {
               notes: `Sesión creada automáticamente al firmar el contrato (ID: ${contract.id})`,
             });
             console.log('[Auto-session] Session created successfully');
-          } catch (locErr: any) {
+          } catch (locErr: unknown) {
+            const locMessage = locErr instanceof Error ? locErr.message : String(locErr);
             // If location column doesn't exist yet, retry without it
-            if (locErr.message?.includes('location')) {
+            if (locMessage.includes('location')) {
               console.warn('[Auto-session] Location column missing, retrying without it...');
               await sessionRepo.create({
                 clientId: contract.clientId,
@@ -101,6 +102,11 @@ export async function POST(request: NextRequest) {
           console.warn('[Auto-session] No SESSION_DATE found in contract content. Did the contract include a session date?');
         }
       }
+    } catch (sessionErr: unknown) {
+      const sessionMessage = sessionErr instanceof Error ? sessionErr.message : String(sessionErr);
+      console.error('[Auto-session] Error creating session:', sessionMessage);
+    }
+
     // 6. Log the event
     try {
       const contract = await contractRepo.getById(tokenData.contract_id);
@@ -155,8 +161,9 @@ export async function POST(request: NextRequest) {
           }
         }
       }
-    } catch (alertErr: any) {
-      console.error('[Admin-Alert] Error sending signature alert:', alertErr?.message);
+    } catch (alertErr: unknown) {
+      const alertMessage = alertErr instanceof Error ? alertErr.message : String(alertErr);
+      console.error('[Admin-Alert] Error sending signature alert:', alertMessage);
     }
 
     return NextResponse.json({
@@ -164,8 +171,9 @@ export async function POST(request: NextRequest) {
       message: 'Contrato firmado legalmente con SHA-256',
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
     console.error('Error sellando contrato:', error);
-    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

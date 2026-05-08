@@ -24,8 +24,9 @@ export class SupabaseSessionRepository implements SessionRepository {
 
       if (error) throw new Error(error.message);
       return (data as unknown as SessionRow[]).map(this.mapToSession);
-    } catch (err: any) {
-      console.warn('SupabaseSessionRepository: Error fetch', err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.warn('SupabaseSessionRepository: Error fetch', message);
       return [];
     }
   }
@@ -40,8 +41,9 @@ export class SupabaseSessionRepository implements SessionRepository {
 
       if (error) throw new Error(error.message);
       return (data as unknown as SessionRow[]).map(this.mapToSession);
-    } catch (err: any) {
-      console.warn('SupabaseSessionRepository: Error fetch', err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.warn('SupabaseSessionRepository: Error fetch', message);
       return [];
     }
   }

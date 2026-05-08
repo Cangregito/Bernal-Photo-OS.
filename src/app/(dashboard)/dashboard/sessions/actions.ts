@@ -21,9 +21,10 @@ export async function createSessionAction(formData: {
     revalidatePath('/dashboard/sessions');
     revalidatePath('/dashboard/clients');
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
     console.error('Error creating session:', error);
-    return { success: false, error: error.message };
+    return { success: false, error: message };
   }
 }
 
@@ -48,8 +49,9 @@ export async function updateSessionAction(
     revalidatePath('/dashboard/sessions');
     revalidatePath('/dashboard/clients');
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
     console.error('Error updating session:', error);
-    return { success: false, error: error.message };
+    return { success: false, error: message };
   }
 }

@@ -6,9 +6,9 @@ import { Contract } from '../../../domain/entities/Contract';
 // Mock del repositorio
 class MockContractRepository implements ContractRepository {
   async getAll(): Promise<Contract[]> { return []; }
-  async getByClientId(_clientId: string): Promise<Contract[]> { return []; }
+  async getByClientId(_: string): Promise<Contract[]> { return []; } // eslint-disable-line @typescript-eslint/no-unused-vars
   async create(contract: Omit<Contract, 'id' | 'createdAt' | 'updatedAt'>): Promise<Contract> { return { ...contract, id: '99', createdAt: new Date(), updatedAt: new Date() }; }
-  async delete(_id: string): Promise<void> {}
+  async delete(_: string): Promise<void> {} // eslint-disable-line @typescript-eslint/no-unused-vars
   
   async getById(id: string): Promise<Contract | null> {
     if (id === '1') {

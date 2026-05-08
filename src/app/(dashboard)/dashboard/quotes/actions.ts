@@ -53,9 +53,10 @@ export async function createQuoteAction(formData: {
     revalidatePath('/dashboard/quotes');
     revalidatePath('/dashboard/clients');
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
     console.error('Error creating quote:', error);
-    return { success: false, error: error.message };
+    return { success: false, error: message };
   }
 }
 
@@ -205,8 +206,9 @@ export async function sendQuoteEmailAction(quoteId: string) {
     revalidatePath('/dashboard/quotes');
 
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
     console.error('Error sending quote email:', error);
-    return { success: false, error: error.message };
+    return { success: false, error: message };
   }
 }

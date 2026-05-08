@@ -23,8 +23,9 @@ export class SupabaseClientRepository implements ClientRepository {
 
       if (error) throw new Error(error.message);
       return (data as unknown as ClientRow[]).map(this.mapToClient);
-    } catch (err: any) {
-      console.warn('SupabaseClientRepository: Error fetch (¿.env configurado?)', err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.warn('SupabaseClientRepository: Error fetch (¿.env configurado?)', message);
       return [];
     }
   }
@@ -39,8 +40,9 @@ export class SupabaseClientRepository implements ClientRepository {
 
       if (error) return null;
       return this.mapToClient(data as unknown as ClientRow);
-    } catch (err: any) {
-      console.warn('SupabaseClientRepository: Error fetch', err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.warn('SupabaseClientRepository: Error fetch', message);
       return null;
     }
   }

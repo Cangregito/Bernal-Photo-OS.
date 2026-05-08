@@ -30,7 +30,7 @@ function Toggle({ enabled, onChange, label, description }: ToggleProps) {
 }
 
 export default function SettingsPage() {
-  const { theme, setTheme, resolvedTheme } = useTheme();
+  const { setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -54,6 +54,7 @@ export default function SettingsPage() {
   const hasSupabase = supabaseUrl && supabaseAnonKey && supabaseUrl !== 'https://dummy.supabase.co';
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
@@ -81,7 +82,7 @@ export default function SettingsPage() {
   }, [hasSupabase, supabaseUrl, supabaseAnonKey]);
 
   const toggleSetting = (key: keyof typeof settings) => {
-    setSettings(prev => ({ ...prev, [key]: !prev[key] as any }));
+    setSettings(prev => ({ ...prev, [key]: !prev[key] }));
     setSaved(false);
   };
 
@@ -96,8 +97,9 @@ export default function SettingsPage() {
       }
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
-    } catch (err: any) {
-      setError(err.message || 'Error al guardar');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      setError(message || 'Error al guardar');
     } finally {
       setSaving(false);
     }

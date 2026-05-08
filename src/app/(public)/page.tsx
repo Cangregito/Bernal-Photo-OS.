@@ -1,21 +1,20 @@
 import Link from 'next/link';
 import { PublicNavbar } from '@/presentation/components/public/PublicNavbar';
 import { HeroSection } from '@/presentation/components/public/HeroSection';
-import { MasonryGallery } from '@/presentation/components/public/MasonryGallery';
 import { AboutPhotographerSection } from '@/presentation/components/public/AboutPhotographerSection';
 import { supabase } from '@/infrastructure/supabase/client';
 
 // Fallback data en caso de que la DB no esté conectada aún
-const fallbackImages = [
+/* const fallbackImages = [
   { id: 1, image_url: '/gallery_1.png', alt_text: 'Bride' },
   { id: 2, image_url: '/hero_wedding.png', alt_text: 'Couple in forest' },
   { id: 3, image_url: '/gallery_1.png', alt_text: 'Wedding details' },
   { id: 4, image_url: '/hero_wedding.png', alt_text: 'Ceremony' },
   { id: 5, image_url: '/gallery_1.png', alt_text: 'Reception' },
-];
+]; */
 
 export default async function PublicPortfolioPage() {
-  let images = fallbackImages;
+  // let images = fallbackImages; // Unused for now
   
   try {
     const { data } = await supabase
@@ -25,7 +24,7 @@ export default async function PublicPortfolioPage() {
       .order('display_order', { ascending: true });
       
     if (data && data.length > 0) {
-      images = data;
+      // images = data; // Keep for future use or remove if not needed
     }
   } catch (error) {
     console.error('Error fetching from Supabase, using fallback images', error);

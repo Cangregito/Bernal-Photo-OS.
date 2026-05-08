@@ -116,7 +116,8 @@ export function QuoteTable({ quotes: initialQuotes, clients }: QuoteTableProps) 
         status: quote.status,
         validUntil: quote.validUntil,
       };
-      const blob = await pdf(React.createElement(QuotePDF, { quote: pdfData })).toBlob();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const blob = await pdf(React.createElement(QuotePDF, { quote: pdfData }) as any).toBlob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
