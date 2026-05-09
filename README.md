@@ -1,5 +1,11 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## CI/CD and Deployment
+
+For the operational deployment guide and required GitHub/Vercel configuration, see:
+
+- `docs/deployment-vercel.md`
+
 ## Getting Started
 
 First, run the development server:
