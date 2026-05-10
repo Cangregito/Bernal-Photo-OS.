@@ -47,6 +47,26 @@ export default function LoginPage() {
         return;
       }
 
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        const [{ data: profile }, { data: assurance }] = await Promise.all([
+          supabase.from('profiles').select('role, settings').eq('id', user.id).maybeSingle(),
+          supabase.auth.mfa.getAuthenticatorAssuranceLevel(),
+        ]);
+
+        const role = profile?.role;
+        const twoFactorEnabled = profile?.settings?.twoFactorAuth === true;
+
+        if (role === 'admin' && twoFactorEnabled && assurance?.currentLevel !== 'aal2') {
+          router.push(`/mfa?next=${encodeURIComponent(redirectTo)}`);
+          router.refresh();
+          return;
+        }
+      }
+
       router.push(redirectTo);
       router.refresh();
     } catch {

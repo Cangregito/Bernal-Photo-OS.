@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
 import { emailService } from '@/lib/email';
+import { createServerSupabaseClient, getServerAuthContext } from '@/lib/auth';
 import crypto from 'crypto';
 
 export async function POST(request: NextRequest) {
@@ -12,32 +11,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Faltan campos requeridos' }, { status: 400 });
     }
 
-    const cookieStore = await cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() {
-            return cookieStore.getAll();
-          },
-          setAll(cookiesToSet) {
-            try {
-              cookiesToSet.forEach(({ name, value, options }) => {
-                cookieStore.set(name, value, options);
-              });
-            } catch {
-              // The `set` method was called from a Server Component.
-            }
-          },
-        },
-      }
-    );
+    const auth = await getServerAuthContext();
 
-    // Verificar permisos
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
+    if (auth.isConfigured && !auth.userId) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+    }
+
+    if (auth.isConfigured && auth.role !== 'admin') {
+      return NextResponse.json({ error: 'Acceso restringido a administradores' }, { status: 403 });
+    }
+
+    if (auth.isConfigured && auth.twoFactorAuthEnabled && auth.currentAal !== 'aal2') {
+      return NextResponse.json({ error: 'Se requiere MFA para completar esta acción' }, { status: 403 });
+    }
+
+    const supabase = await createServerSupabaseClient();
+
+    if (!supabase) {
+      return NextResponse.json({ error: 'Supabase no está configurado' }, { status: 503 });
     }
 
     // Generar un token único y seguro

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Bell, Shield, Palette, Globe, Save, Loader2, CheckCircle, Moon, Sun, AlertCircle, Download } from 'lucide-react';
 import { createBrowserClient } from '@supabase/ssr';
 import { useTheme } from 'next-themes';
+import { useRouter } from 'next/navigation';
 
 interface ToggleProps {
   enabled: boolean;
@@ -30,6 +31,7 @@ function Toggle({ enabled, onChange, label, description }: ToggleProps) {
 }
 
 export default function SettingsPage() {
+  const router = useRouter();
   const { setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
@@ -209,7 +211,22 @@ export default function SettingsPage() {
           <h3 className="text-sm font-semibold text-zinc-300 flex items-center gap-2 mb-4 border-b border-zinc-800 pb-2">
             <Shield className="w-4 h-4" /> Seguridad y Respaldo
           </h3>
-          <Toggle enabled={settings.twoFactorAuth} onChange={() => toggleSetting('twoFactorAuth')} label="MFA / 2FA" description="Doble factor (Configurar en Supabase Auth)." />
+          <div className="flex items-center justify-between gap-4 py-3">
+            <div>
+              <p className="text-sm font-medium text-zinc-200">MFA / 2FA</p>
+              <p className="text-xs text-zinc-500 mt-0.5">
+                {settings.twoFactorAuth
+                  ? 'Protección reforzada activa para tu sesión de administrador.'
+                  : 'Aún no has activado MFA para el panel administrativo.'}
+              </p>
+            </div>
+            <button
+              onClick={() => router.push('/mfa?next=/dashboard/settings')}
+              className="rounded-lg border border-zinc-700 px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:border-emerald-500/40 hover:text-white"
+            >
+              {settings.twoFactorAuth ? 'Gestionar MFA' : 'Configurar MFA'}
+            </button>
+          </div>
           
           <div className="mt-4 pt-4 border-t border-zinc-800">
             <p className="text-xs text-zinc-500 mb-3 italic">Nota: El respaldo automático se ejecuta diariamente. Puedes descargar uno manual ahora:</p>
