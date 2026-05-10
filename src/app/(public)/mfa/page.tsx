@@ -4,17 +4,9 @@ import { FormEvent, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AlertCircle, CheckCircle2, Loader2, Shield, Smartphone } from 'lucide-react';
 import { createBrowserClient } from '@supabase/ssr';
+import Image from 'next/image';
 
 type MfaMode = 'loading' | 'setup' | 'verify' | 'active';
-
-type TotpFactor = {
-  id: string;
-  factor_type: 'totp';
-  status: 'verified' | 'unverified';
-  friendly_name?: string;
-  created_at: string;
-  updated_at: string;
-};
 
 export default function MfaPage() {
   const router = useRouter();
@@ -90,6 +82,7 @@ export default function MfaPage() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void refreshState();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasSupabase, nextPath]);
@@ -292,7 +285,7 @@ export default function MfaPage() {
               ) : (
                 <div className="mt-6 grid gap-6 md:grid-cols-[220px,1fr]">
                   <div className="rounded-2xl border border-zinc-800 bg-white p-4">
-                    <img src={qrCode} alt="Código QR para MFA" className="h-full w-full" />
+                    <Image src={qrCode} alt="Código QR para MFA" width={256} height={256} className="h-full w-full" unoptimized />
                   </div>
                   <div className="space-y-4">
                     <div>
