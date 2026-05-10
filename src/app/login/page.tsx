@@ -58,9 +58,20 @@ export default function LoginPage() {
         ]);
 
         const role = profile?.role;
-        const twoFactorEnabled = profile?.settings?.twoFactorAuth === true;
 
-        if (role === 'admin' && twoFactorEnabled && assurance?.currentLevel !== 'aal2') {
+        await fetch('/api/security/audit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            event: 'login_success',
+            metadata: {
+              role: role ?? 'unknown',
+              redirectTo,
+            },
+          }),
+        }).catch(() => undefined);
+
+        if (role === 'admin' && assurance?.currentLevel !== 'aal2') {
           router.push(`/mfa?next=${encodeURIComponent(redirectTo)}`);
           router.refresh();
           return;

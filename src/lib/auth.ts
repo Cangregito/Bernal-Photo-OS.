@@ -35,6 +35,32 @@ export async function createServerSupabaseClient() {
   });
 }
 
+export async function logServerSecurityEvent(params: {
+  userId?: string | null;
+  action: string;
+  metadata?: Record<string, unknown>;
+  ipAddress?: string;
+}) {
+  const supabase = await createServerSupabaseClient();
+
+  if (!supabase || !params.userId) {
+    return;
+  }
+
+  const { error } = await supabase.from('audit_logs').insert({
+    user_id: params.userId,
+    action: params.action,
+    entity: 'profile',
+    entity_id: params.userId,
+    metadata: params.metadata ?? {},
+    ip_address: params.ipAddress,
+  });
+
+  if (error) {
+    console.error('Error creating server security audit log:', error);
+  }
+}
+
 export async function getServerAuthContext() {
   const supabase = await createServerSupabaseClient();
 

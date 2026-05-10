@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Bell, Search, LogOut, Settings, User, ChevronDown, FileSignature, Calendar, X } from 'lucide-react';
+import { Bell, Search, LogOut, Settings, User, ChevronDown, FileSignature, Calendar, X, Shield } from 'lucide-react';
 import { createBrowserClient } from '@supabase/ssr';
 
 interface Notification {
@@ -61,6 +61,31 @@ export function Header() {
           description = `Sesión programada: ${log.metadata?.type || 'Evento'}`;
           Icon = Calendar;
           iconColor = 'text-amber-400 bg-amber-400/10';
+        } else if (log.action === 'login' && log.entity === 'profile') {
+          title = 'Inicio de Sesión';
+          description = `Acceso de ${log.metadata?.role === 'admin' ? 'administrador' : 'usuario'} al panel`;
+          Icon = User;
+          iconColor = 'text-sky-400 bg-sky-400/10';
+        } else if (log.action === 'mfa_verified' && log.entity === 'profile') {
+          title = 'MFA Verificado';
+          description = 'Se validó el segundo factor de autenticación';
+          Icon = Shield;
+          iconColor = 'text-emerald-400 bg-emerald-400/10';
+        } else if (log.action === 'logout' && log.entity === 'profile') {
+          title = 'Cierre de Sesión';
+          description = 'La sesión del panel administrativo se cerró';
+          Icon = LogOut;
+          iconColor = 'text-zinc-300 bg-zinc-300/10';
+        } else if (log.action === 'admin_access_denied' && log.entity === 'profile') {
+          title = 'Acceso Admin Denegado';
+          description = 'Una cuenta sin rol admin intentó abrir el dashboard';
+          Icon = Shield;
+          iconColor = 'text-amber-400 bg-amber-400/10';
+        } else if (log.action === 'mfa_required' && log.entity === 'profile') {
+          title = 'MFA Requerido';
+          description = 'Se bloqueó el acceso admin hasta verificar el segundo factor';
+          Icon = Shield;
+          iconColor = 'text-rose-400 bg-rose-400/10';
         }
 
         // Relative time helper
@@ -103,6 +128,16 @@ export function Header() {
   const handleLogout = async () => {
     if (hasSupabase) {
       const supabase = createBrowserClient(supabaseUrl!, supabaseAnonKey!);
+      await fetch('/api/security/audit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event: 'logout',
+          metadata: {
+            source: 'header',
+          },
+        }),
+      }).catch(() => undefined);
       await supabase.auth.signOut();
     }
     router.push('/login');

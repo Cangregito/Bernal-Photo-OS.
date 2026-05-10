@@ -40,6 +40,7 @@ export default function SettingsPage() {
   const [exporting, setExporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const [mfaConfigured, setMfaConfigured] = useState(false);
   
   const [settings, setSettings] = useState({
     emailNotifications: true,
@@ -71,8 +72,19 @@ export default function SettingsPage() {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
           setUserId(user.id);
-          const { data } = await supabase.from('profiles').select('settings').eq('id', user.id).single();
+          const [{ data }, { data: factors }] = await Promise.all([
+            supabase.from('profiles').select('settings').eq('id', user.id).single(),
+            supabase.auth.mfa.listFactors(),
+          ]);
+
           if (data?.settings) setSettings(prev => ({ ...prev, ...data.settings }));
+
+          const hasVerifiedTotpFactor = (factors?.all ?? []).some(
+            (factor) => factor.factor_type === 'totp' && factor.status === 'verified'
+          );
+
+          setMfaConfigured(hasVerifiedTotpFactor);
+          setSettings(prev => ({ ...prev, twoFactorAuth: hasVerifiedTotpFactor }));
         }
       } catch (err) {
         console.error(err);
@@ -215,16 +227,16 @@ export default function SettingsPage() {
             <div>
               <p className="text-sm font-medium text-zinc-200">MFA / 2FA</p>
               <p className="text-xs text-zinc-500 mt-0.5">
-                {settings.twoFactorAuth
-                  ? 'Protección reforzada activa para tu sesión de administrador.'
-                  : 'Aún no has activado MFA para el panel administrativo.'}
+                {mfaConfigured
+                  ? 'MFA ya está configurado y es obligatorio para todas las cuentas admin.'
+                  : 'MFA es obligatorio para admins. Configúralo para poder entrar al panel.'}
               </p>
             </div>
             <button
               onClick={() => router.push('/mfa?next=/dashboard/settings')}
               className="rounded-lg border border-zinc-700 px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:border-emerald-500/40 hover:text-white"
             >
-              {settings.twoFactorAuth ? 'Gestionar MFA' : 'Configurar MFA'}
+              {mfaConfigured ? 'Verificar MFA' : 'Configurar MFA'}
             </button>
           </div>
           

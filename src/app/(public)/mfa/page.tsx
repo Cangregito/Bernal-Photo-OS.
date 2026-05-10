@@ -52,7 +52,7 @@ export default function MfaPage() {
     }
 
     const [{ data: profile }, { data: factors }, { data: assurance }] = await Promise.all([
-      supabase.from('profiles').select('role, settings').eq('id', user.id).maybeSingle(),
+      supabase.from('profiles').select('role').eq('id', user.id).maybeSingle(),
       supabase.auth.mfa.listFactors(),
       supabase.auth.mfa.getAuthenticatorAssuranceLevel(),
     ]);
@@ -62,24 +62,22 @@ export default function MfaPage() {
       return;
     }
 
-    const allTotpFactors = (factors?.all ?? []).filter(
-      (factor): factor is TotpFactor => factor.factor_type === 'totp'
-    );
-    const verifiedFactor = allTotpFactors.find((factor) => factor.status === 'verified') ?? null;
-    const twoFactorEnabled = profile?.settings?.twoFactorAuth === true;
+    const verifiedFactorId = Array.isArray(factors?.totp) && factors.totp.length > 0
+      ? String((factors.totp[0] as { id: string }).id)
+      : null;
 
-    if (twoFactorEnabled && assurance?.currentLevel === 'aal2') {
+    if (assurance?.currentLevel === 'aal2') {
       setMode('active');
-      setFactorId(verifiedFactor?.id ?? null);
+      setFactorId(verifiedFactorId);
       setQrCode(null);
       setSecret(null);
       setLoading(false);
       return;
     }
 
-    if (twoFactorEnabled && verifiedFactor) {
+    if (verifiedFactorId) {
       setMode('verify');
-      setFactorId(verifiedFactor.id);
+      setFactorId(verifiedFactorId);
       setQrCode(null);
       setSecret(null);
       setLoading(false);
@@ -87,7 +85,7 @@ export default function MfaPage() {
     }
 
     setMode('setup');
-    setFactorId(verifiedFactor?.id ?? null);
+    setFactorId(verifiedFactorId);
     setLoading(false);
   }
 
@@ -171,6 +169,18 @@ export default function MfaPage() {
         throw verifyError;
       }
 
+      await fetch('/api/security/audit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event: 'mfa_verified',
+          metadata: {
+            nextPath,
+            factorType: 'totp',
+          },
+        }),
+      }).catch(() => undefined);
+
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -217,65 +227,6 @@ export default function MfaPage() {
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
       setError(message || 'No fue posible verificar el código MFA.');
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const disableMfa = async () => {
-    if (!factorId || !hasSupabase) {
-      return;
-    }
-
-    setSubmitting(true);
-    setError(null);
-    setMessage(null);
-
-    try {
-      const supabase = createBrowserClient(supabaseUrl!, supabaseAnonKey!);
-      const { error: unenrollError } = await supabase.auth.mfa.unenroll({ factorId });
-
-      if (unenrollError) {
-        throw unenrollError;
-      }
-
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (user) {
-        const { data: profile, error: profileReadError } = await supabase
-          .from('profiles')
-          .select('settings')
-          .eq('id', user.id)
-          .single();
-
-        if (profileReadError) {
-          throw profileReadError;
-        }
-
-        const nextSettings = {
-          ...(profile?.settings ?? {}),
-          twoFactorAuth: false,
-        };
-
-        const { error: profileWriteError } = await supabase
-          .from('profiles')
-          .update({ settings: nextSettings, updated_at: new Date().toISOString() })
-          .eq('id', user.id);
-
-        if (profileWriteError) {
-          throw profileWriteError;
-        }
-      }
-
-      setMode('setup');
-      setFactorId(null);
-      setCode('');
-      setMessage('MFA desactivado. Puedes configurarlo de nuevo cuando quieras.');
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : String(err);
-      setError(message || 'No fue posible desactivar MFA.');
     } finally {
       setSubmitting(false);
     }
@@ -405,7 +356,7 @@ export default function MfaPage() {
           <section className="mt-8 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-5">
             <h2 className="text-sm font-semibold text-emerald-300">MFA activo</h2>
             <p className="mt-3 text-sm text-zinc-300">
-              Tu sesión actual ya fue verificada con un segundo factor y el panel administrativo está protegido.
+              Tu sesión actual ya fue verificada con un segundo factor. El MFA es obligatorio para cuentas admin.
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
               <button
@@ -416,13 +367,6 @@ export default function MfaPage() {
                 className="inline-flex items-center justify-center rounded-lg bg-white px-4 py-2 text-sm font-medium text-zinc-950 transition-colors hover:bg-zinc-200"
               >
                 Volver al panel
-              </button>
-              <button
-                onClick={disableMfa}
-                disabled={submitting}
-                className="inline-flex items-center justify-center rounded-lg border border-zinc-700 px-4 py-2 text-sm font-medium text-zinc-200 transition-colors hover:border-red-500/40 hover:text-white disabled:border-zinc-800 disabled:text-zinc-500"
-              >
-                {submitting ? 'Desactivando...' : 'Desactivar MFA'}
               </button>
             </div>
           </section>

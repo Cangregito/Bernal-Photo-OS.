@@ -1,7 +1,7 @@
 import { Sidebar } from "@/presentation/components/layout/Sidebar";
 import { Header } from "@/presentation/components/layout/Header";
 import { redirect } from 'next/navigation';
-import { getServerAuthContext } from '@/lib/auth';
+import { getServerAuthContext, logServerSecurityEvent } from '@/lib/auth';
 
 export default async function DashboardLayout({
   children,
@@ -16,10 +16,29 @@ export default async function DashboardLayout({
     }
 
     if (auth.role !== 'admin') {
+      await logServerSecurityEvent({
+        userId: auth.userId,
+        action: 'admin_access_denied',
+        metadata: {
+          reason: 'role_not_admin',
+          target: '/dashboard',
+          role: auth.role,
+        },
+      });
       redirect('/unauthorized');
     }
 
-    if (auth.twoFactorAuthEnabled && auth.currentAal !== 'aal2') {
+    if (auth.currentAal !== 'aal2') {
+      await logServerSecurityEvent({
+        userId: auth.userId,
+        action: 'mfa_required',
+        metadata: {
+          reason: 'aal2_required',
+          target: '/dashboard',
+          currentAal: auth.currentAal,
+          nextAal: auth.nextAal,
+        },
+      });
       redirect('/mfa?next=/dashboard');
     }
   }

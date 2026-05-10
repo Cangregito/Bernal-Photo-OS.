@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Acceso restringido a administradores' }, { status: 403 });
     }
 
-    if (auth.isConfigured && auth.twoFactorAuthEnabled && auth.currentAal !== 'aal2') {
+    if (auth.isConfigured && auth.currentAal !== 'aal2') {
       return NextResponse.json({ error: 'Se requiere MFA para completar esta acción' }, { status: 403 });
     }
 
