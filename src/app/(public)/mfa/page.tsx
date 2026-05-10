@@ -1,7 +1,7 @@
 'use client';
 
 import { FormEvent, useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { AlertCircle, CheckCircle2, Loader2, Shield, Smartphone } from 'lucide-react';
 import { createBrowserClient } from '@supabase/ssr';
 import Image from 'next/image';
@@ -10,8 +10,9 @@ type MfaMode = 'loading' | 'setup' | 'verify' | 'active';
 
 export default function MfaPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const nextPath = searchParams.get('next') || '/dashboard';
+  const nextPath = typeof window !== 'undefined'
+    ? (new URLSearchParams(window.location.search).get('next') || '/dashboard')
+    : '/dashboard';
 
   const [mode, setMode] = useState<MfaMode>('loading');
   const [loading, setLoading] = useState(true);
