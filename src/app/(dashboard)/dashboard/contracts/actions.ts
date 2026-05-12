@@ -172,9 +172,9 @@ export async function sendContractLinkAction(contractId: string) {
     const resendApiKey = process.env.RESEND_API_KEY;
     if (!resendApiKey) return { success: false, error: 'RESEND_API_KEY no configurado' };
 
-    const testEmail = process.env.RESEND_TEST_EMAIL;
-    const recipientEmail = testEmail || client.email;
-    const subjectPrefix = testEmail ? `[PRUEBA → ${client.email}] ` : '';
+    // Enviar directamente al cliente
+    const recipientEmail = client.email;
+    const subjectPrefix = '';
 
     const emailHtml = `
 <!DOCTYPE html>

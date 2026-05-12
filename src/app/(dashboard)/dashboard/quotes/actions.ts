@@ -176,12 +176,6 @@ export async function sendQuoteEmailAction(quoteId: string) {
     const resendApiKey = process.env.RESEND_API_KEY;
     if (!resendApiKey) return { success: false, error: 'RESEND_API_KEY no configurado' };
 
-    // En modo de prueba, Resend solo permite enviar al email propio verificado.
-    // RESEND_TEST_EMAIL actúa como override hasta tener dominio verificado.
-    const testEmail = process.env.RESEND_TEST_EMAIL;
-    const recipientEmail = testEmail || client.email;
-    const subjectPrefix = testEmail ? `[PRUEBA → ${client.email}] ` : '';
-
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -189,9 +183,9 @@ export async function sendQuoteEmailAction(quoteId: string) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Bernal Photo <onboarding@resend.dev>',
-        to: [recipientEmail],
-        subject: `${subjectPrefix}Tu Cotización de Bernal Photo — ${formatCurrency(quote.totalAmount)}`,
+        from: 'Bernal Photo <admin@bernalphoto.com>',
+        to: [client.email],
+        subject: `Tu Cotización de Bernal Photo — ${formatCurrency(quote.totalAmount)}`,
         html: emailHtml,
       }),
     });
