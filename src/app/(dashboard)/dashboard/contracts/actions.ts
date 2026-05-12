@@ -166,7 +166,7 @@ export async function sendContractLinkAction(contractId: string) {
 
     await contractRepository.update(contractId, { status: 'sent' });
 
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cangregito.site';
     const signingUrl = `${baseUrl}/sign/${token}`;
 
     const resendApiKey = process.env.RESEND_API_KEY;
