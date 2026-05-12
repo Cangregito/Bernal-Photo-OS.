@@ -11,7 +11,7 @@ function getResendClient() {
 
 // El correo verificado desde donde saldrán todos los envíos
 // Asegúrate de configurar este dominio en Resend
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'Bernal Photo <admin@bernalphoto.com>';
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'Bernal Photo <admin@cangregito.site>';
 
 export interface SessionReminderPayload {
   to: string;

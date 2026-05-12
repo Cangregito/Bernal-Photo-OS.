@@ -229,7 +229,7 @@ export async function sendContractLinkAction(contractId: string) {
       method: 'POST',
       headers: { Authorization: `Bearer ${resendApiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        from: process.env.RESEND_FROM_EMAIL || 'Bernal Photo <admin@bernalphoto.com>',
+        from: process.env.RESEND_FROM_EMAIL || 'Bernal Photo <admin@cangregito.site>',
         to: [recipientEmail],
         subject: `${subjectPrefix}Firma tu contrato con Bernal Photo`,
         html: emailHtml,
