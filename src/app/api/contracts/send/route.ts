@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
       .eq('id', contractId);
 
     // Crear la URL absoluta
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || request.nextUrl.origin;
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://cangregito.site';
     const tokenUrl = `${baseUrl}/sign/${token}`;
 
     // Verificar si el servicio de correo está configurado
