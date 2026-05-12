@@ -183,7 +183,7 @@ export async function sendQuoteEmailAction(quoteId: string) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Bernal Photo <admin@bernalphoto.com>',
+        from: process.env.RESEND_FROM_EMAIL || 'Bernal Photo <admin@bernalphoto.com>',
         to: [client.email],
         subject: `Tu Cotización de Bernal Photo — ${formatCurrency(quote.totalAmount)}`,
         html: emailHtml,
