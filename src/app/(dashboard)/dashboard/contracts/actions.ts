@@ -40,6 +40,46 @@ export async function createContractAction(formData: {
   }
 }
 
+export async function updateContractAction(
+  contractId: string,
+  formData: {
+    content?: string;
+    sessionDate?: string;
+    sessionType?: string;
+    sessionLocation?: string;
+  }
+) {
+  try {
+    let newContent = formData.content;
+    if (formData.content && formData.sessionDate) {
+      const sessionMeta = `[SESSION_DATE:${formData.sessionDate}][SESSION_TYPE:${formData.sessionType || 'event'}][SESSION_LOCATION:${formData.sessionLocation || ''}]\n`;
+      newContent = sessionMeta + formData.content;
+    }
+
+    await contractRepository.update(contractId, {
+      ...(newContent && { content: newContent }),
+    });
+    revalidatePath('/dashboard/contracts');
+    return { success: true };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error('Error updating contract:', error);
+    return { success: false, error: message };
+  }
+}
+
+export async function deleteContractAction(contractId: string) {
+  try {
+    await contractRepository.delete(contractId);
+    revalidatePath('/dashboard/contracts');
+    return { success: true };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error('Error deleting contract:', error);
+    return { success: false, error: message };
+  }
+}
+
 export async function createSessionFromContractAction(contractId: string, overrides?: {
   date?: string;
   type?: string;
@@ -189,7 +229,7 @@ export async function sendContractLinkAction(contractId: string) {
       method: 'POST',
       headers: { Authorization: `Bearer ${resendApiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        from: 'Bernal Photo <onboarding@resend.dev>',
+        from: 'Bernal Photo <admin@bernalphoto.com>',
         to: [recipientEmail],
         subject: `${subjectPrefix}Firma tu contrato con Bernal Photo`,
         html: emailHtml,

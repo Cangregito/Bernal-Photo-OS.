@@ -61,6 +61,14 @@ export async function POST(request: NextRequest) {
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || request.nextUrl.origin;
     const tokenUrl = `${baseUrl}/sign/${token}`;
 
+    // Verificar si el servicio de correo está configurado
+    if (!process.env.RESEND_API_KEY) {
+      return NextResponse.json(
+        { error: 'Servicio de correo no configurado. El enlace de firma es: ' + tokenUrl },
+        { status: 503 }
+      );
+    }
+
     // Enviar correo de firma al cliente
     await emailService.sendContractSignatureLink({
       to: clientEmail,

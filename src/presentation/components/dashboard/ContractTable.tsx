@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import {
   FileSignature, ShieldCheck, Clock, ShieldAlert,
-  Send, MoreHorizontal, X, Download, Loader2,
+  Send, X, Download, Loader2,
   FilePlus, Link, CheckCircle, AlertTriangle, CalendarPlus,
+  Trash2, Edit
 } from 'lucide-react';
 
 type ContractStatus = 'draft' | 'sent' | 'signed';
@@ -101,7 +102,9 @@ Firma del Prestador                    Firma del Cliente`;
 
 export function ContractTable({ contracts: initialContracts, clients, quotes }: ContractTableProps) {
   const [showModal, setShowModal] = useState(false);
+  const [editingContractId, setEditingContractId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [sendingId, setSendingId] = useState<string | null>(null);
   const [loadingPdfId, setLoadingPdfId] = useState<string | null>(null);
   const [creatingSessionId, setCreatingSessionId] = useState<string | null>(null);
@@ -129,30 +132,99 @@ export function ContractTable({ contracts: initialContracts, clients, quotes }: 
   // Quotes filtered by selected client
   const clientQuotes = quotes.filter(q => q.clientId === form.clientId);
 
-  const handleCreate = async () => {
+  const handleCreateOrUpdate = async () => {
     if (!form.clientId || !form.content) return;
     setSaving(true);
     try {
-      const { createContractAction } = await import('@/app/(dashboard)/dashboard/contracts/actions');
-      const result = await createContractAction({
-        clientId: form.clientId,
-        quoteId: form.quoteId || undefined,
-        content: form.content,
-        sessionDate: form.sessionDate || undefined,
-        sessionType: form.sessionType,
-        sessionLocation: form.sessionLocation || undefined,
-      });
-      if (result.success) {
-        setForm({ clientId: '', quoteId: '', content: '', sessionDate: '', sessionType: 'wedding', sessionLocation: '' });
-        setShowModal(false);
+      if (editingContractId) {
+        const { updateContractAction } = await import('@/app/(dashboard)/dashboard/contracts/actions');
+        const result = await updateContractAction(editingContractId, {
+          content: form.content,
+          sessionDate: form.sessionDate || undefined,
+          sessionType: form.sessionType,
+          sessionLocation: form.sessionLocation || undefined,
+        });
+        if (result.success) {
+          closeModal();
+        } else {
+          alert('Error al actualizar contrato: ' + result.error);
+        }
       } else {
-        alert('Error al guardar contrato: ' + result.error);
+        const { createContractAction } = await import('@/app/(dashboard)/dashboard/contracts/actions');
+        const result = await createContractAction({
+          clientId: form.clientId,
+          quoteId: form.quoteId || undefined,
+          content: form.content,
+          sessionDate: form.sessionDate || undefined,
+          sessionType: form.sessionType,
+          sessionLocation: form.sessionLocation || undefined,
+        });
+        if (result.success) {
+          closeModal();
+        } else {
+          alert('Error al guardar contrato: ' + result.error);
+        }
       }
     } catch (err) {
       console.error(err);
       alert('Error inesperado al guardar el contrato');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setEditingContractId(null);
+    setForm({ clientId: '', quoteId: '', content: '', sessionDate: '', sessionType: 'wedding', sessionLocation: '' });
+  };
+
+  const handleEdit = (contract: SerializableContract) => {
+    // Parse metadata from content to fill form correctly
+    let parsedDate = '';
+    let parsedType = 'wedding';
+    let parsedLocation = '';
+    let parsedContent = contract.content;
+
+    const firstLine = contract.content.split('\n')[0] || '';
+    const dateMatch = firstLine.match(/\[SESSION_DATE:([^\]]+)\]/);
+    const typeMatch = firstLine.match(/\[SESSION_TYPE:([^\]]+)\]/);
+    const locationMatch = firstLine.match(/\[SESSION_LOCATION:([^\]]*)\]/);
+
+    if (dateMatch) {
+      parsedDate = dateMatch[1];
+      parsedType = typeMatch?.[1] || 'wedding';
+      parsedLocation = locationMatch?.[1] || '';
+      // Remove the metadata line from the displayed content in the form
+      parsedContent = contract.content.split('\n').slice(1).join('\n');
+    }
+
+    setForm({
+      clientId: contract.clientId,
+      quoteId: contract.quoteId || '',
+      content: parsedContent,
+      sessionDate: parsedDate,
+      sessionType: parsedType as 'wedding' | 'engagement' | 'portrait' | 'event',
+      sessionLocation: parsedLocation,
+    });
+    setEditingContractId(contract.id);
+    setShowModal(true);
+  };
+
+  const handleDelete = async (contractId: string) => {
+    if (!confirm('¿Estás seguro de que deseas eliminar este contrato? Esta acción no se puede deshacer.')) return;
+    setDeletingId(contractId);
+    try {
+      const { deleteContractAction } = await import('@/app/(dashboard)/dashboard/contracts/actions');
+      const result = await deleteContractAction(contractId);
+      if (!result.success) {
+        alert('Error al eliminar contrato: ' + result.error);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error inesperado al eliminar el contrato');
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -265,8 +337,8 @@ export function ContractTable({ contracts: initialContracts, clients, quotes }: 
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
           <div className="bg-zinc-900 border border-white/10 rounded-xl p-6 w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold text-zinc-100">Nuevo Contrato</h2>
-              <button onClick={() => setShowModal(false)} className="p-1 text-zinc-400 hover:text-white rounded-md hover:bg-white/10 transition-colors cursor-pointer"><X className="w-5 h-5" /></button>
+              <h2 className="text-lg font-semibold text-zinc-100">{editingContractId ? 'Editar Contrato' : 'Nuevo Contrato'}</h2>
+              <button onClick={closeModal} className="p-1 text-zinc-400 hover:text-white rounded-md hover:bg-white/10 transition-colors cursor-pointer"><X className="w-5 h-5" /></button>
             </div>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
@@ -275,7 +347,8 @@ export function ContractTable({ contracts: initialContracts, clients, quotes }: 
                   <select
                     value={form.clientId}
                     onChange={e => handleClientOrQuoteChange(e.target.value, '')}
-                    className="w-full bg-zinc-800 border border-white/10 rounded-md px-3 py-2 text-sm text-zinc-100 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-colors"
+                    disabled={!!editingContractId}
+                    className="w-full bg-zinc-800 border border-white/10 rounded-md px-3 py-2 text-sm text-zinc-100 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-colors disabled:opacity-40"
                   >
                     <option value="">Seleccionar cliente...</option>
                     {clients.map(c => <option key={c.id} value={c.id}>{c.firstName} {c.lastName}</option>)}
@@ -286,7 +359,7 @@ export function ContractTable({ contracts: initialContracts, clients, quotes }: 
                   <select
                     value={form.quoteId}
                     onChange={e => handleClientOrQuoteChange(form.clientId, e.target.value)}
-                    disabled={!form.clientId}
+                    disabled={!form.clientId || !!editingContractId}
                     className="w-full bg-zinc-800 border border-white/10 rounded-md px-3 py-2 text-sm text-zinc-100 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-colors disabled:opacity-40"
                   >
                     <option value="">Sin cotización vinculada</option>
@@ -359,12 +432,12 @@ export function ContractTable({ contracts: initialContracts, clients, quotes }: 
               </div>
 
               <button
-                onClick={handleCreate}
+                onClick={handleCreateOrUpdate}
                 disabled={!form.clientId || !form.content || saving}
                 className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-zinc-700 disabled:text-zinc-500 text-white px-4 py-2.5 rounded-md font-medium text-sm transition-colors cursor-pointer disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {saving && <Loader2 className="w-4 h-4 animate-spin" />}
-                {saving ? 'Guardando...' : 'Guardar Contrato'}
+                {saving ? 'Guardando...' : editingContractId ? 'Actualizar Contrato' : 'Guardar Contrato'}
               </button>
             </div>
           </div>
@@ -464,8 +537,22 @@ export function ContractTable({ contracts: initialContracts, clients, quotes }: 
                           </button>
                         )}
 
-                        <button className="p-2 text-zinc-400 hover:text-white hover:bg-white/10 rounded-md transition-colors cursor-pointer">
-                          <MoreHorizontal className="w-4 h-4" />
+                        {contract.status !== 'signed' && (
+                          <button
+                            onClick={() => handleEdit(contract)}
+                            title="Editar contrato"
+                            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-zinc-400 hover:text-white hover:bg-white/10 rounded-md transition-colors cursor-pointer"
+                          >
+                            <Edit className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                        <button 
+                          onClick={() => handleDelete(contract.id)}
+                          disabled={deletingId === contract.id}
+                          title="Eliminar contrato"
+                          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-red-400 hover:text-red-300 hover:bg-red-400/10 rounded-md transition-colors cursor-pointer disabled:opacity-50"
+                        >
+                          {deletingId === contract.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
                         </button>
                       </div>
                     </td>

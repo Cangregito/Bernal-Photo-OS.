@@ -1,7 +1,13 @@
 import { Resend } from 'resend';
 
-// Inicializar cliente Resend con la variable de entorno
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Función para obtener el cliente de Resend de forma perezosa (lazy)
+// Evita errores durante el build en entornos sin variables de entorno configuradas
+function getResendClient() {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return null;
+  return new Resend(apiKey);
+}
+
 
 // El correo verificado desde donde saldrán todos los envíos
 // Asegúrate de configurar este dominio en Resend
@@ -27,13 +33,14 @@ export const emailService = {
    * Envía un recordatorio de sesión próxima
    */
   async sendSessionReminder(payload: SessionReminderPayload) {
-    if (!process.env.RESEND_API_KEY) {
+    const { to, clientName, sessionType, sessionDate, location, daysUntil } = payload;
+    const resend = getResendClient();
+    
+    if (!resend) {
       console.warn('[EMAIL MOCK] No RESEND_API_KEY. Recordatorio:', payload);
       return { id: 'mock-id' };
     }
 
-    const { to, clientName, sessionType, sessionDate, location, daysUntil } = payload;
-    
     return resend.emails.send({
       from: FROM_EMAIL,
       to,
@@ -58,12 +65,13 @@ export const emailService = {
    * Envía un enlace mágico para firmar un contrato
    */
   async sendContractSignatureLink(payload: ContractSignaturePayload) {
-    if (!process.env.RESEND_API_KEY) {
+    const { to, clientName, tokenUrl } = payload;
+    const resend = getResendClient();
+
+    if (!resend) {
       console.warn('[EMAIL MOCK] No RESEND_API_KEY. Envío de contrato:', payload);
       return { id: 'mock-id' };
     }
-
-    const { to, clientName, tokenUrl } = payload;
 
     return resend.emails.send({
       from: FROM_EMAIL,
