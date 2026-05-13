@@ -23,21 +23,24 @@ test.describe('Navegación del Dashboard', () => {
     await page.goto('/dashboard');
 
     // Navegar a Clientes
-    await page.click('text=Clientes');
+    await page.getByRole('link', { name: 'Clientes', exact: true }).click();
     await expect(page).toHaveURL(/\/dashboard\/clients/);
-    await expect(page.locator('text=Gestión de Clientes')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Clientes' })).toBeVisible();
 
     // Navegar a Sesiones
-    await page.click('text=Sesiones');
+    await page.getByRole('link', { name: 'Sesiones', exact: true }).click();
     await expect(page).toHaveURL(/\/dashboard\/sessions/);
+    await expect(page.getByRole('heading', { name: 'Sesiones' })).toBeVisible();
 
     // Navegar a Cotizaciones
-    await page.click('text=Cotizaciones');
+    await page.getByRole('link', { name: 'Cotizaciones', exact: true }).click();
     await expect(page).toHaveURL(/\/dashboard\/quotes/);
+    await expect(page.getByRole('heading', { name: 'Cotizaciones' })).toBeVisible();
 
     // Navegar a Contratos
-    await page.click('text=Contratos');
+    await page.getByRole('link', { name: 'Contratos', exact: true }).click();
     await expect(page).toHaveURL(/\/dashboard\/contracts/);
+    await expect(page.getByRole('heading', { name: /Contratos/ })).toBeVisible();
   });
 
   test('debe abrir y cerrar el panel de notificaciones', async ({ page }) => {
@@ -47,8 +50,8 @@ test.describe('Navegación del Dashboard', () => {
     await page.locator('button').filter({ has: page.locator('svg.lucide-bell') }).click();
 
     // Verificar que se abre el panel
-    await expect(page.locator('text=Notificaciones')).toBeVisible();
-    await expect(page.locator('text=Contrato firmado')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Notificaciones' })).toBeVisible();
+    await expect(page.getByText('No hay notificaciones.')).toBeVisible();
 
     // Click fuera para cerrar
     await page.click('body', { position: { x: 10, y: 10 } });

@@ -1,6 +1,6 @@
 import { Session, SessionType, SessionStatus } from '../../domain/entities/Session';
 import { SessionRepository } from '../../domain/repositories/SessionRepository';
-import { supabase } from '../supabase/client';
+import { isSupabaseConfigured, supabase } from '../supabase/client';
 
 interface SessionRow {
   id: string;
@@ -16,6 +16,7 @@ interface SessionRow {
 
 export class SupabaseSessionRepository implements SessionRepository {
   async getAll(): Promise<Session[]> {
+    if (!isSupabaseConfigured) return [];
     try {
       const { data, error } = await supabase
         .from('sessions')
@@ -32,6 +33,7 @@ export class SupabaseSessionRepository implements SessionRepository {
   }
 
   async getByClientId(clientId: string): Promise<Session[]> {
+    if (!isSupabaseConfigured) return [];
     try {
       const { data, error } = await supabase
         .from('sessions')
@@ -49,6 +51,7 @@ export class SupabaseSessionRepository implements SessionRepository {
   }
 
   async getById(id: string): Promise<Session | null> {
+    if (!isSupabaseConfigured) return null;
     const { data, error } = await supabase
       .from('sessions')
       .select('*')

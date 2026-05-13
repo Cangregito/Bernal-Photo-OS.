@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { ThemeProvider } from "@/presentation/providers/ThemeProvider";
+import { Geist } from "next/font/google";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
   title: "Bernal Photo",
@@ -14,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className="h-full antialiased" suppressHydrationWarning>
+    <html lang="es" className={cn("h-full antialiased", "font-sans", geist.variable)} suppressHydrationWarning>
       <body className="h-full font-sans bg-background text-foreground transition-colors duration-300">
         <ThemeProvider
           attribute="class"
@@ -33,6 +38,7 @@ export default function RootLayout({
             })(window, document, "clarity", "script", "wq4ujtey0j");
           `}
         </Script>
+        <SpeedInsights />
       </body>
     </html>
   );

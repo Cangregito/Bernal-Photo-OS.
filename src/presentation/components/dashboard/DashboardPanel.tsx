@@ -188,41 +188,46 @@ export function DashboardPanel({ data }: { data: DashboardData }) {
             </div>
           </div>
 
-          {/* Header de días */}
-          <div className="grid grid-cols-7 mb-2">
-            {DAYS_ES.map(d => (
-              <div key={d} className="text-center text-xs font-medium text-zinc-500 py-2">{d}</div>
-            ))}
-          </div>
+          {/* Contenedor responsivo del calendario */}
+          <div className="overflow-x-auto">
+            <div className="min-w-[320px]">
+              {/* Header de días */}
+              <div className="grid grid-cols-7 mb-2">
+                {DAYS_ES.map(d => (
+                  <div key={d} className="text-center text-xs font-medium text-zinc-500 py-2">{d}</div>
+                ))}
+              </div>
 
-          {/* Grid de días */}
-          <div className="grid grid-cols-7 gap-px bg-white/[0.02] rounded-lg overflow-hidden">
-            {calendarDays.map((day, i) => {
-              const hasSessions = day.isCurrentMonth && sessionsByDate[day.date]?.length > 0;
-              const isSelected = selectedDate === day.date;
-              return (
-                <button
-                  key={i}
-                  onClick={() => day.isCurrentMonth && setSelectedDate(isSelected ? null : day.date)}
-                  disabled={!day.isCurrentMonth}
-                  className={`
-                    relative h-12 flex flex-col items-center justify-center text-sm transition-all duration-150 cursor-pointer
-                    ${day.isCurrentMonth ? 'text-zinc-300 hover:bg-white/5' : 'text-zinc-700 cursor-default'}
-                    ${day.isToday ? 'font-bold text-white' : ''}
-                    ${isSelected ? 'bg-emerald-500/15 ring-1 ring-emerald-500/30 rounded-lg' : ''}
-                  `}
-                >
-                  <span className={day.isToday ? 'w-7 h-7 rounded-full bg-emerald-500 flex items-center justify-center text-white text-xs font-bold' : ''}>{day.day}</span>
-                  {hasSessions && (
-                    <div className="flex gap-0.5 mt-0.5">
-                      {sessionsByDate[day.date].map((s, j) => (
-                        <span key={j} className={`w-1.5 h-1.5 rounded-full ${s.status === 'confirmed' ? 'bg-emerald-400' : s.status === 'pending' ? 'bg-yellow-400' : 'bg-blue-400'}`} />
-                      ))}
-                    </div>
-                  )}
-                </button>
-              );
-            })}
+              {/* Grid de días */}
+              <div className="grid grid-cols-7 gap-px bg-white/[0.02] rounded-lg overflow-hidden">
+                {calendarDays.map((day, i) => {
+                  const hasSessions = day.isCurrentMonth && sessionsByDate[day.date]?.length > 0;
+                  const isSelected = selectedDate === day.date;
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => day.isCurrentMonth && setSelectedDate(isSelected ? null : day.date)}
+                      disabled={!day.isCurrentMonth}
+                      className={`
+                        relative h-12 flex flex-col items-center justify-center text-sm transition-all duration-150 cursor-pointer
+                        ${day.isCurrentMonth ? 'text-zinc-300 hover:bg-white/5' : 'text-zinc-700 cursor-default'}
+                        ${day.isToday ? 'font-bold text-white' : ''}
+                        ${isSelected ? 'bg-emerald-500/15 ring-1 ring-emerald-500/30 rounded-lg' : ''}
+                      `}
+                    >
+                      <span className={day.isToday ? 'w-7 h-7 rounded-full bg-emerald-500 flex items-center justify-center text-white text-xs font-bold' : ''}>{day.day}</span>
+                      {hasSessions && (
+                        <div className="flex gap-0.5 mt-0.5">
+                          {sessionsByDate[day.date].map((s, j) => (
+                            <span key={j} className={`w-1.5 h-1.5 rounded-full ${s.status === 'confirmed' ? 'bg-emerald-400' : s.status === 'pending' ? 'bg-yellow-400' : 'bg-blue-400'}`} />
+                          ))}
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
           {/* Detalle del día seleccionado */}

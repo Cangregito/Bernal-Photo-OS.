@@ -1,9 +1,11 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import { Bell, Search, LogOut, Settings, User, ChevronDown, FileSignature, Calendar, X, Shield } from 'lucide-react';
+import { useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
+import { Bell, Search, LogOut, Settings, User, ChevronDown, FileSignature, Calendar, X, Shield, Menu, LayoutDashboard, Users, Camera as CameraIcon, FileText } from 'lucide-react';
 import { createBrowserClient } from '@supabase/ssr';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from '@/components/ui/sheet';
 
 interface Notification {
   id: string;
@@ -19,9 +21,24 @@ export function Header() {
   const router = useRouter();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [_loadingNotifs, setLoadingNotifs] = useState(false); // eslint-disable-line @typescript-eslint/no-unused-vars
+  const pathname = usePathname();
+
+  const navigation = [
+    { name: 'Overview', href: '/dashboard', icon: LayoutDashboard },
+    { name: 'Clientes', href: '/dashboard/clients', icon: Users },
+    { name: 'Sesiones', href: '/dashboard/sessions', icon: CameraIcon },
+    { name: 'Cotizaciones', href: '/dashboard/quotes', icon: FileText },
+    { name: 'Contratos', href: '/dashboard/contracts', icon: FileText },
+  ];
+
+  const isActive = (href: string) => {
+    if (href === '/dashboard') return pathname === '/dashboard';
+    return pathname.startsWith(href);
+  };
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -176,9 +193,72 @@ export function Header() {
   };
 
   return (
-    <header className="h-16 flex items-center justify-between px-8 border-b border-white/5 glass-panel z-30 sticky top-0">
+    <header className="h-16 flex items-center justify-between px-4 md:px-8 border-b border-white/5 glass-panel z-30 sticky top-0 gap-4">
+      {/* Mobile Menu Trigger */}
+      <div className="md:hidden">
+        <Sheet open={showMobileMenu} onOpenChange={setShowMobileMenu}>
+          <SheetTrigger className="p-2 text-white/70 hover:text-white transition-colors rounded-lg hover:bg-white/5">
+            <Menu className="w-5 h-5" />
+          </SheetTrigger>
+          <SheetContent side="left" className="w-72 bg-zinc-950 border-r border-white/10 p-0 flex flex-col">
+            <SheetHeader className="h-16 flex items-center px-6 border-b border-white/5 text-left">
+              <SheetTitle className="text-lg font-semibold tracking-wider text-white">
+                BERNAL<span className="text-white/50 ml-1">OS</span>
+              </SheetTitle>
+            </SheetHeader>
+            <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+              {navigation.map((item) => {
+                const Icon = item.icon;
+                const active = isActive(item.href);
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    onClick={() => setShowMobileMenu(false)}
+                    className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors group ${
+                      active
+                        ? 'bg-white/10 text-white'
+                        : 'text-white/70 hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    <Icon className={`w-5 h-5 mr-3 transition-colors ${
+                      active ? 'text-emerald-400' : 'text-white/50 group-hover:text-white'
+                    }`} />
+                    {item.name}
+                    {active && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-400" />}
+                  </Link>
+                );
+              })}
+            </nav>
+            <div className="p-4 border-t border-white/5 space-y-1">
+              <Link
+                href="/dashboard/settings"
+                onClick={() => setShowMobileMenu(false)}
+                className={`w-full flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors group ${
+                  isActive('/dashboard/settings')
+                    ? 'bg-white/10 text-white'
+                    : 'text-white/70 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <Settings className={`w-5 h-5 mr-3 transition-colors ${
+                  isActive('/dashboard/settings') ? 'text-emerald-400' : 'text-white/50 group-hover:text-white'
+                }`} />
+                Settings
+              </Link>
+              <button
+                onClick={() => { setShowMobileMenu(false); handleLogout(); }}
+                className="w-full flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-red-400/70 hover:text-red-400 hover:bg-red-400/10 transition-colors group cursor-pointer"
+              >
+                <LogOut className="w-5 h-5 mr-3 text-red-400/50 group-hover:text-red-400 transition-colors" />
+                Logout
+              </button>
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
+
       {/* Search */}
-      <div className="flex-1 max-w-md">
+      <div className="flex-1 max-w-md hidden sm:block">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
           <input

@@ -30,9 +30,9 @@ test.describe('Página de Login', () => {
     // En dev sin Supabase, el login simula y redirige al dashboard
     await submitBtn.click();
     await expect(page.locator('text=Verificando...')).toBeVisible();
-    
-    // Esperar redirección al dashboard
-    await page.waitForURL(/\/dashboard/, { timeout: 5000 });
+
+    // Esperar redirección al dashboard (puede tardar más en CI)
+    await expect(page).toHaveURL(/\/dashboard/, { timeout: 15000 });
   });
 
   test('debe mostrar branding en desktop', async ({ page }) => {

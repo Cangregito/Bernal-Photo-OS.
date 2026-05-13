@@ -38,7 +38,7 @@ export async function proxy(request: NextRequest) {
   }
 
   // Validar tokens de firma efímeros
-  if (request.nextUrl.pathname.startsWith('/sign/')) {
+  if (request.nextUrl.pathname.startsWith('/sign/') && request.nextUrl.pathname !== '/sign/expired') {
     const token = request.nextUrl.pathname.split('/sign/')[1];
     if (token) {
       const { data: tokenData } = await supabase

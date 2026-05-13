@@ -1,6 +1,6 @@
 import { Contract, ContractStatus } from '../../domain/entities/Contract';
 import { ContractRepository } from '../../domain/repositories/ContractRepository';
-import { supabase } from '../supabase/client';
+import { isSupabaseConfigured, supabase } from '../supabase/client';
 
 interface ContractRow {
   id: string;
@@ -17,6 +17,7 @@ interface ContractRow {
 
 export class SupabaseContractRepository implements ContractRepository {
   async getAll(): Promise<Contract[]> {
+    if (!isSupabaseConfigured) return [];
     try {
       const { data, error } = await supabase
         .from('contracts')
@@ -33,6 +34,7 @@ export class SupabaseContractRepository implements ContractRepository {
   }
 
   async getByClientId(clientId: string): Promise<Contract[]> {
+    if (!isSupabaseConfigured) return [];
     try {
       const { data, error } = await supabase
         .from('contracts')
@@ -50,6 +52,7 @@ export class SupabaseContractRepository implements ContractRepository {
   }
 
   async getById(id: string): Promise<Contract | null> {
+    if (!isSupabaseConfigured) return null;
     const { data, error } = await supabase
       .from('contracts')
       .select('*')

@@ -22,6 +22,11 @@ export default defineConfig({
   webServer: {
     command: 'npm run dev -- --hostname 127.0.0.1 --port 3001',
     url: baseURL,
+    env: {
+      NEXT_PUBLIC_SUPABASE_URL: 'https://dummy.supabase.co',
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: 'dummy',
+      SUPABASE_SERVICE_ROLE_KEY: '',
+    },
     reuseExistingServer: !process.env.CI,
   },
 });

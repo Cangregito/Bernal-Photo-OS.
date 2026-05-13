@@ -1,6 +1,6 @@
 import { Quote, QuoteItem, QuoteStatus } from '../../domain/entities/Quote';
 import { QuoteRepository } from '../../domain/repositories/QuoteRepository';
-import { supabase } from '../supabase/client';
+import { isSupabaseConfigured, supabase } from '../supabase/client';
 
 interface QuoteRow {
   id: string;
@@ -17,6 +17,7 @@ interface QuoteRow {
 
 export class SupabaseQuoteRepository implements QuoteRepository {
   async getAll(): Promise<Quote[]> {
+    if (!isSupabaseConfigured) return [];
     try {
       const { data, error } = await supabase
         .from('quotes')
@@ -33,6 +34,7 @@ export class SupabaseQuoteRepository implements QuoteRepository {
   }
 
   async getByClientId(clientId: string): Promise<Quote[]> {
+    if (!isSupabaseConfigured) return [];
     try {
       const { data, error } = await supabase
         .from('quotes')
@@ -50,6 +52,7 @@ export class SupabaseQuoteRepository implements QuoteRepository {
   }
 
   async getById(id: string): Promise<Quote | null> {
+    if (!isSupabaseConfigured) return null;
     const { data, error } = await supabase
       .from('quotes')
       .select('*')

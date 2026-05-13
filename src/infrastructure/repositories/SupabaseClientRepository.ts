@@ -1,6 +1,6 @@
 import { Client } from '../../domain/entities/Client';
 import { ClientRepository } from '../../domain/repositories/ClientRepository';
-import { supabase } from '../supabase/client';
+import { isSupabaseConfigured, supabase } from '../supabase/client';
 
 interface ClientRow {
   id: string;
@@ -15,6 +15,7 @@ interface ClientRow {
 
 export class SupabaseClientRepository implements ClientRepository {
   async getAll(): Promise<Client[]> {
+    if (!isSupabaseConfigured) return [];
     try {
       const { data, error } = await supabase
         .from('clients')
@@ -31,6 +32,7 @@ export class SupabaseClientRepository implements ClientRepository {
   }
 
   async getById(id: string): Promise<Client | null> {
+    if (!isSupabaseConfigured) return null;
     try {
       const { data, error } = await supabase
         .from('clients')
