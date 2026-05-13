@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Bell, Search, LogOut, Settings, User, ChevronDown, FileSignature, Calendar, X, Shield, Menu, LayoutDashboard, Users, Camera as CameraIcon, FileText } from 'lucide-react';
 import { createBrowserClient } from '@supabase/ssr';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from '@/components/ui/sheet';
+import { ThemeToggle } from '@/presentation/components/ui/ThemeToggle';
 
 interface Notification {
   id: string;
@@ -61,7 +62,7 @@ export function Header() {
         let title = 'Actividad';
         let description = 'Nueva actividad en el sistema';
         let Icon = Bell;
-        let iconColor = 'text-zinc-400 bg-zinc-400/10';
+        let iconColor = 'text-muted-foreground bg-zinc-400/10';
 
         if (log.action === 'signed' && log.entity === 'contract') {
           title = 'Contrato Firmado';
@@ -92,7 +93,7 @@ export function Header() {
           title = 'Cierre de Sesión';
           description = 'La sesión del panel administrativo se cerró';
           Icon = LogOut;
-          iconColor = 'text-zinc-300 bg-zinc-300/10';
+          iconColor = 'text-foreground bg-zinc-300/10';
         } else if (log.action === 'admin_access_denied' && log.entity === 'profile') {
           title = 'Acceso Admin Denegado';
           description = 'Una cuenta sin rol admin intentó abrir el dashboard';
@@ -193,17 +194,17 @@ export function Header() {
   };
 
   return (
-    <header className="h-16 flex items-center justify-between px-4 md:px-8 border-b border-white/5 glass-panel z-30 sticky top-0 gap-4">
+    <header className="h-16 flex items-center justify-between px-4 md:px-8 border-b border-border glass-panel z-30 sticky top-0 gap-4">
       {/* Mobile Menu Trigger */}
       <div className="md:hidden">
         <Sheet open={showMobileMenu} onOpenChange={setShowMobileMenu}>
-          <SheetTrigger className="p-2 text-white/70 hover:text-white transition-colors rounded-lg hover:bg-white/5">
+          <SheetTrigger className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-accent">
             <Menu className="w-5 h-5" />
           </SheetTrigger>
-          <SheetContent side="left" className="w-72 bg-zinc-950 border-r border-white/10 p-0 flex flex-col">
-            <SheetHeader className="h-16 flex items-center px-6 border-b border-white/5 text-left">
-              <SheetTitle className="text-lg font-semibold tracking-wider text-white">
-                BERNAL<span className="text-white/50 ml-1">OS</span>
+          <SheetContent side="left" className="w-72 bg-popover border-r border-border p-0 flex flex-col">
+            <SheetHeader className="h-16 flex items-center px-6 border-b border-border text-left">
+              <SheetTitle className="text-lg font-semibold tracking-wider text-foreground">
+                BERNAL<span className="text-muted-foreground ml-1">OS</span>
               </SheetTitle>
             </SheetHeader>
             <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
@@ -217,12 +218,12 @@ export function Header() {
                     onClick={() => setShowMobileMenu(false)}
                     className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors group ${
                       active
-                        ? 'bg-white/10 text-white'
-                        : 'text-white/70 hover:text-white hover:bg-white/5'
+                        ? 'bg-accent text-foreground'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                     }`}
                   >
                     <Icon className={`w-5 h-5 mr-3 transition-colors ${
-                      active ? 'text-emerald-400' : 'text-white/50 group-hover:text-white'
+                      active ? 'text-emerald-400' : 'text-muted-foreground group-hover:text-foreground'
                     }`} />
                     {item.name}
                     {active && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-400" />}
@@ -230,18 +231,18 @@ export function Header() {
                 );
               })}
             </nav>
-            <div className="p-4 border-t border-white/5 space-y-1">
+            <div className="p-4 border-t border-border space-y-1">
               <Link
                 href="/dashboard/settings"
                 onClick={() => setShowMobileMenu(false)}
                 className={`w-full flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors group ${
                   isActive('/dashboard/settings')
-                    ? 'bg-white/10 text-white'
-                    : 'text-white/70 hover:text-white hover:bg-white/5'
+                    ? 'bg-accent text-foreground'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                 }`}
               >
                 <Settings className={`w-5 h-5 mr-3 transition-colors ${
-                  isActive('/dashboard/settings') ? 'text-emerald-400' : 'text-white/50 group-hover:text-white'
+                  isActive('/dashboard/settings') ? 'text-emerald-400' : 'text-muted-foreground group-hover:text-foreground'
                 }`} />
                 Settings
               </Link>
@@ -260,37 +261,39 @@ export function Header() {
       {/* Search */}
       <div className="flex-1 max-w-md hidden sm:block">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Buscar clientes, sesiones o contratos..."
-            className="w-full bg-white/5 border border-white/10 rounded-full pl-10 pr-4 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-1 focus:ring-white/20 transition-all"
+            className="w-full bg-muted border border-border rounded-full pl-10 pr-4 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-white/20 transition-all"
           />
         </div>
       </div>
 
       {/* Right Actions */}
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center space-x-2 md:space-x-4">
+        
+        <ThemeToggle />
 
         {/* Notifications */}
         <div className="relative" ref={notifRef}>
           <button
             onClick={() => { setShowNotifications(!showNotifications); setShowProfile(false); }}
-            className="relative text-white/60 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/5 cursor-pointer"
+            className="relative text-muted-foreground hover:text-foreground transition-colors p-2 rounded-lg hover:bg-accent cursor-pointer"
           >
             <Bell className="w-5 h-5" />
             {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-blue-500 rounded-full border-2 border-zinc-900 animate-pulse" />
+              <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-blue-500 rounded-full border-2 border-border animate-pulse" />
             )}
           </button>
 
           {/* Notifications Dropdown */}
           {showNotifications && (
-            <div className="absolute right-0 top-full mt-2 w-96 bg-zinc-900 border border-white/10 rounded-xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
-              <div className="flex items-center justify-between px-4 py-3 border-b border-white/5">
-                <h3 className="text-sm font-semibold text-zinc-100">Notificaciones</h3>
+            <div className="absolute right-0 top-full mt-2 w-96 bg-popover border border-border rounded-xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+                <h3 className="text-sm font-semibold text-foreground">Notificaciones</h3>
                 {unreadCount > 0 && (
                   <button onClick={markAllRead} className="text-xs text-emerald-400 hover:text-emerald-300 transition-colors cursor-pointer">
                     Marcar todas como leídas
@@ -299,7 +302,7 @@ export function Header() {
               </div>
               <div className="max-h-80 overflow-y-auto">
                 {notifications.length === 0 ? (
-                  <div className="px-4 py-8 text-center text-zinc-500 text-sm">
+                  <div className="px-4 py-8 text-center text-muted-foreground text-sm">
                     No hay notificaciones.
                   </div>
                 ) : (
@@ -308,22 +311,22 @@ export function Header() {
                     return (
                       <div
                         key={notif.id}
-                        className={`px-4 py-3 flex items-start gap-3 hover:bg-white/5 transition-colors group ${notif.unread ? 'bg-white/[0.02]' : ''}`}
+                        className={`px-4 py-3 flex items-start gap-3 hover:bg-accent transition-colors group ${notif.unread ? 'bg-muted' : ''}`}
                       >
                         <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${notif.iconColor}`}>
                           <Icon className="w-4 h-4" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
-                            <p className="text-sm font-medium text-zinc-200">{notif.title}</p>
+                            <p className="text-sm font-medium text-foreground">{notif.title}</p>
                             {notif.unread && <span className="w-1.5 h-1.5 bg-blue-500 rounded-full flex-shrink-0" />}
                           </div>
-                          <p className="text-xs text-zinc-400 mt-0.5 truncate">{notif.description}</p>
-                          <p className="text-xs text-zinc-500 mt-1">{notif.time}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5 truncate">{notif.description}</p>
+                          <p className="text-xs text-muted-foreground mt-1">{notif.time}</p>
                         </div>
                         <button
                           onClick={(e) => { e.stopPropagation(); dismissNotification(notif.id); }}
-                          className="opacity-0 group-hover:opacity-100 p-1 text-zinc-500 hover:text-zinc-300 rounded transition-all cursor-pointer"
+                          className="opacity-0 group-hover:opacity-100 p-1 text-muted-foreground hover:text-foreground rounded transition-all cursor-pointer"
                         >
                           <X className="w-3.5 h-3.5" />
                         </button>
@@ -340,41 +343,41 @@ export function Header() {
         <div className="relative" ref={profileRef}>
           <button
             onClick={() => { setShowProfile(!showProfile); setShowNotifications(false); }}
-            className="flex items-center space-x-3 cursor-pointer p-1.5 rounded-lg hover:bg-white/5 transition-colors"
+            className="flex items-center space-x-3 cursor-pointer p-1.5 rounded-lg hover:bg-accent transition-colors"
           >
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-zinc-700 to-zinc-600 flex items-center justify-center border border-white/10">
-              <span className="text-xs font-medium text-white">BP</span>
+            <div className="w-8 h-8 rounded-full bg-gradient-to-tr bg-primary flex items-center justify-center border border-border">
+              <span className="text-xs font-medium text-foreground">BP</span>
             </div>
             <div className="hidden md:block text-left">
-              <p className="text-sm font-medium text-white/90">Bernal Photo</p>
-              <p className="text-xs text-white/50">Admin</p>
+              <p className="text-sm font-medium text-foreground">Bernal Photo</p>
+              <p className="text-xs text-muted-foreground">Admin</p>
             </div>
-            <ChevronDown className={`w-4 h-4 text-white/40 hidden md:block transition-transform duration-200 ${showProfile ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`w-4 h-4 text-muted-foreground hidden md:block transition-transform duration-200 ${showProfile ? 'rotate-180' : ''}`} />
           </button>
 
           {/* Profile Dropdown */}
           {showProfile && (
-            <div className="absolute right-0 top-full mt-2 w-56 bg-zinc-900 border border-white/10 rounded-xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+            <div className="absolute right-0 top-full mt-2 w-56 bg-popover border border-border rounded-xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
               {/* Profile Info */}
-              <div className="px-4 py-3 border-b border-white/5">
-                <p className="text-sm font-medium text-zinc-100">Bernal Photo</p>
-                <p className="text-xs text-zinc-400">admin@bernalphoto.com</p>
+              <div className="px-4 py-3 border-b border-border">
+                <p className="text-sm font-medium text-foreground">Bernal Photo</p>
+                <p className="text-xs text-muted-foreground">admin@bernalphoto.com</p>
               </div>
 
               {/* Menu Items */}
               <div className="py-1">
-                <button onClick={() => navigateTo('/dashboard/profile')} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-300 hover:bg-white/5 hover:text-white transition-colors cursor-pointer">
-                  <User className="w-4 h-4 text-zinc-500" />
+                <button onClick={() => navigateTo('/dashboard/profile')} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-accent hover:text-foreground transition-colors cursor-pointer">
+                  <User className="w-4 h-4 text-muted-foreground" />
                   Mi Perfil
                 </button>
-                <button onClick={() => navigateTo('/dashboard/settings')} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-300 hover:bg-white/5 hover:text-white transition-colors cursor-pointer">
-                  <Settings className="w-4 h-4 text-zinc-500" />
+                <button onClick={() => navigateTo('/dashboard/settings')} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-accent hover:text-foreground transition-colors cursor-pointer">
+                  <Settings className="w-4 h-4 text-muted-foreground" />
                   Configuración
                 </button>
               </div>
 
               {/* Logout */}
-              <div className="border-t border-white/5 py-1">
+              <div className="border-t border-border py-1">
                 <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors cursor-pointer">
                   <LogOut className="w-4 h-4" />
                   Cerrar Sesión

@@ -66,7 +66,7 @@ export default function SignContractPage({ params }: { params: Promise<{ token: 
   // ── Loading ──────────────────────────────────────────────────────────────
   if (loading) {
     return (
-      <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="w-8 h-8 text-emerald-400 animate-spin" />
       </div>
     );
@@ -75,13 +75,13 @@ export default function SignContractPage({ params }: { params: Promise<{ token: 
   // ── Invalid / expired token ───────────────────────────────────────────────
   if (tokenError) {
     return (
-      <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-6">
+      <div className="min-h-screen bg-background flex items-center justify-center p-6">
         <div className="max-w-md w-full text-center">
           <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-6">
             <XCircle className="w-8 h-8 text-red-400" />
           </div>
-          <h1 className="text-2xl font-bold text-white mb-3">Enlace No Válido</h1>
-          <p className="text-zinc-400 text-sm">{tokenError}</p>
+          <h1 className="text-2xl font-bold text-foreground mb-3">Enlace No Válido</h1>
+          <p className="text-muted-foreground text-sm">{tokenError}</p>
         </div>
       </div>
     );
@@ -90,19 +90,19 @@ export default function SignContractPage({ params }: { params: Promise<{ token: 
   // ── Successfully signed ───────────────────────────────────────────────────
   if (signed) {
     return (
-      <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-6">
+      <div className="min-h-screen bg-background flex items-center justify-center p-6">
         <div className="max-w-md w-full text-center">
           <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center mx-auto mb-6">
             <ShieldCheck className="w-8 h-8 text-emerald-400" />
           </div>
-          <h1 className="text-2xl font-bold text-white mb-3">¡Contrato Firmado!</h1>
-          <p className="text-zinc-400 text-sm mb-6">
+          <h1 className="text-2xl font-bold text-foreground mb-3">¡Contrato Firmado!</h1>
+          <p className="text-muted-foreground text-sm mb-6">
             Tu firma ha sido registrada y sellada con un hash criptográfico SHA-256.
             Este documento es ahora legalmente vinculante e inmutable.
           </p>
           <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-lg p-4">
             <p className="text-xs text-emerald-400 font-mono">Sello de integridad SHA-256 generado exitosamente</p>
-            <p className="text-xs text-zinc-500 mt-2">Este enlace ha sido invalidado y no puede volver a utilizarse.</p>
+            <p className="text-xs text-muted-foreground mt-2">Este enlace ha sido invalidado y no puede volver a utilizarse.</p>
           </div>
         </div>
       </div>
@@ -111,32 +111,32 @@ export default function SignContractPage({ params }: { params: Promise<{ token: 
 
   // ── Sign form ─────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-zinc-950 py-12 px-6">
+    <div className="min-h-screen bg-background py-12 px-6">
       <div className="max-w-2xl mx-auto">
 
         {/* Branding */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white tracking-tight">BERNAL PHOTO</h1>
-          <p className="text-zinc-500 text-sm mt-1">Firma Digital de Contrato</p>
+          <h1 className="text-3xl font-bold text-foreground tracking-tight">BERNAL PHOTO</h1>
+          <p className="text-muted-foreground text-sm mt-1">Firma Digital de Contrato</p>
         </div>
 
-        <div className="bg-zinc-900 border border-white/10 rounded-xl shadow-2xl overflow-hidden">
+        <div className="bg-popover border border-border rounded-xl shadow-2xl overflow-hidden">
 
           {/* Title bar */}
-          <div className="bg-zinc-800/60 px-6 py-4 border-b border-white/5 flex items-center gap-3">
+          <div className="bg-card/60 px-6 py-4 border-b border-border flex items-center gap-3">
             <FileSignature className="w-5 h-5 text-emerald-400" />
             <div>
-              <p className="text-sm font-semibold text-white">Contrato de Prestación de Servicios</p>
+              <p className="text-sm font-semibold text-foreground">Contrato de Prestación de Servicios</p>
               {contractData?.clientName && (
-                <p className="text-xs text-zinc-400">Preparado para: {contractData.clientName}</p>
+                <p className="text-xs text-muted-foreground">Preparado para: {contractData.clientName}</p>
               )}
             </div>
           </div>
 
           {/* Contract content */}
           <div className="p-6">
-            <div className="bg-zinc-800/40 rounded-lg p-5 mb-5 max-h-80 overflow-y-auto">
-              <pre className="text-sm text-zinc-300 leading-relaxed whitespace-pre-wrap font-mono">
+            <div className="bg-card/40 rounded-lg p-5 mb-5 max-h-80 overflow-y-auto">
+              <pre className="text-sm text-foreground leading-relaxed whitespace-pre-wrap font-mono">
                 {contractData?.content}
               </pre>
             </div>
@@ -155,9 +155,9 @@ export default function SignContractPage({ params }: { params: Promise<{ token: 
                 type="checkbox"
                 checked={agreed}
                 onChange={e => setAgreed(e.target.checked)}
-                className="mt-0.5 w-4 h-4 rounded border-zinc-600 text-emerald-500 focus:ring-emerald-500/30 bg-zinc-800"
+                className="mt-0.5 w-4 h-4 rounded border-border text-emerald-500 focus:ring-emerald-500/30 bg-card"
               />
-              <span className="text-sm text-zinc-300 leading-relaxed group-hover:text-zinc-200 transition-colors">
+              <span className="text-sm text-foreground leading-relaxed group-hover:text-foreground transition-colors">
                 He leído y acepto todos los términos y condiciones de este contrato. Entiendo que mi firma digital tiene validez legal.
               </span>
             </label>
@@ -170,7 +170,7 @@ export default function SignContractPage({ params }: { params: Promise<{ token: 
             <button
               onClick={handleSign}
               disabled={signing || !agreed}
-              className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-zinc-700 disabled:text-zinc-500 text-white px-6 py-3.5 rounded-lg font-semibold text-sm transition-colors cursor-pointer disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-muted disabled:text-muted-foreground text-foreground px-6 py-3.5 rounded-lg font-semibold text-sm transition-colors cursor-pointer disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {signing ? (
                 <>
@@ -187,7 +187,7 @@ export default function SignContractPage({ params }: { params: Promise<{ token: 
           </div>
         </div>
 
-        <p className="text-center text-xs text-zinc-600 mt-6">
+        <p className="text-center text-xs text-muted-foreground mt-6">
           Protegido por Bernal Photo OS · Integridad criptográfica SHA-256
         </p>
       </div>

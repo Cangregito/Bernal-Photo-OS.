@@ -32,7 +32,7 @@ interface QuoteTableProps {
 }
 
 const statusConfig: Record<QuoteStatus, { label: string; color: string; icon: React.ElementType }> = {
-  draft: { label: 'Borrador', color: 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20', icon: FileEdit },
+  draft: { label: 'Borrador', color: 'bg-zinc-500/10 text-muted-foreground border-border/20', icon: FileEdit },
   sent: { label: 'Enviada', color: 'bg-blue-500/10 text-blue-500 border-blue-500/20', icon: Send },
   accepted: { label: 'Aceptada', color: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20', icon: CheckCircle },
   rejected: { label: 'Rechazada', color: 'bg-red-500/10 text-red-500 border-red-500/20', icon: XCircle },
@@ -139,8 +139,8 @@ export function QuoteTable({ quotes: initialQuotes, clients }: QuoteTableProps) 
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-semibold text-zinc-100">Cotizaciones</h1>
-          <p className="text-sm text-zinc-400 mt-1">Gestiona los presupuestos dinámicos y su cálculo financiero.</p>
+          <h1 className="text-2xl font-semibold text-foreground">Cotizaciones</h1>
+          <p className="text-sm text-muted-foreground mt-1">Gestiona los presupuestos dinámicos y su cálculo financiero.</p>
         </div>
         <button onClick={() => setShowModal(true)} className="flex items-center gap-2 bg-zinc-100 hover:bg-white text-zinc-900 px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm cursor-pointer">
           <FilePlus className="w-4 h-4" />
@@ -151,27 +151,27 @@ export function QuoteTable({ quotes: initialQuotes, clients }: QuoteTableProps) 
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-zinc-900 border border-white/10 rounded-xl p-6 w-full max-w-lg shadow-2xl animate-in zoom-in-95 duration-200">
+          <div className="bg-popover border border-border rounded-xl p-6 w-full max-w-lg shadow-2xl animate-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold text-zinc-100">Nueva Cotización</h2>
-              <button onClick={() => setShowModal(false)} className="p-1 text-zinc-400 hover:text-white rounded-md hover:bg-white/10 transition-colors cursor-pointer"><X className="w-5 h-5" /></button>
+              <h2 className="text-lg font-semibold text-foreground">Nueva Cotización</h2>
+              <button onClick={() => setShowModal(false)} className="p-1 text-muted-foreground hover:text-foreground rounded-md hover:bg-accent transition-colors cursor-pointer"><X className="w-5 h-5" /></button>
             </div>
             <div className="space-y-4">
               <div>
-                <label className="text-xs text-zinc-400 mb-1 block">Cliente *</label>
-                <select value={form.clientId} onChange={e => setForm({ ...form, clientId: e.target.value })} className="w-full bg-zinc-800 border border-white/10 rounded-md px-3 py-2 text-sm text-zinc-100 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-colors">
+                <label className="text-xs text-muted-foreground mb-1 block">Cliente *</label>
+                <select value={form.clientId} onChange={e => setForm({ ...form, clientId: e.target.value })} className="w-full bg-card border border-border rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-colors">
                   <option value="">Seleccionar cliente...</option>
                   {clients.map(c => <option key={c.id} value={c.id}>{c.firstName} {c.lastName}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-xs text-zinc-400 mb-2 block">Servicios</label>
+                <label className="text-xs text-muted-foreground mb-2 block">Servicios</label>
                 <div className="space-y-2 max-h-48 overflow-y-auto">
                   {form.items.map((item, i) => (
                     <div key={i} className="flex gap-2 items-center">
-                      <input value={item.name} onChange={e => updateItem(i, 'name', e.target.value)} className="flex-1 bg-zinc-800 border border-white/10 rounded-md px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-emerald-500/50" placeholder="Ej: Cobertura 8hrs" />
-                      <input type="number" value={item.price || ''} onChange={e => updateItem(i, 'price', Number(e.target.value))} className="w-24 bg-zinc-800 border border-white/10 rounded-md px-3 py-2 text-sm text-zinc-100 focus:outline-none focus:ring-1 focus:ring-emerald-500/50" placeholder="$" />
-                      <input type="number" value={item.quantity} onChange={e => updateItem(i, 'quantity', Number(e.target.value))} className="w-16 bg-zinc-800 border border-white/10 rounded-md px-3 py-2 text-sm text-zinc-100 focus:outline-none focus:ring-1 focus:ring-emerald-500/50" min={1} />
+                      <input value={item.name} onChange={e => updateItem(i, 'name', e.target.value)} className="flex-1 bg-card border border-border rounded-md px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-emerald-500/50" placeholder="Ej: Cobertura 8hrs" />
+                      <input type="number" value={item.price || ''} onChange={e => updateItem(i, 'price', Number(e.target.value))} className="w-24 bg-card border border-border rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-emerald-500/50" placeholder="$" />
+                      <input type="number" value={item.quantity} onChange={e => updateItem(i, 'quantity', Number(e.target.value))} className="w-16 bg-card border border-border rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-emerald-500/50" min={1} />
                       {form.items.length > 1 && (
                         <button onClick={() => removeItem(i)} className="p-1.5 text-red-400 hover:bg-red-400/10 rounded transition-colors cursor-pointer"><Trash2 className="w-3.5 h-3.5" /></button>
                       )}
@@ -182,13 +182,13 @@ export function QuoteTable({ quotes: initialQuotes, clients }: QuoteTableProps) 
                   <Plus className="w-3 h-3" /> Agregar servicio
                 </button>
               </div>
-              <div className="text-right text-sm text-zinc-300 border-t border-white/5 pt-3">
-                Total: <span className="font-semibold text-white">{formatCurrency(form.items.reduce((s, i) => s + (i.price * i.quantity), 0))}</span>
+              <div className="text-right text-sm text-foreground border-t border-border pt-3">
+                Total: <span className="font-semibold text-foreground">{formatCurrency(form.items.reduce((s, i) => s + (i.price * i.quantity), 0))}</span>
               </div>
               <button
                 onClick={handleCreate}
                 disabled={!form.clientId || !form.items.some(i => i.name && i.price > 0) || saving}
-                className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-zinc-700 disabled:text-zinc-500 text-white px-4 py-2.5 rounded-md font-medium text-sm transition-colors cursor-pointer disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-muted disabled:text-muted-foreground text-foreground px-4 py-2.5 rounded-md font-medium text-sm transition-colors cursor-pointer disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {saving && <Loader2 className="w-4 h-4 animate-spin" />}
                 {saving ? 'Guardando...' : 'Guardar Cotización'}
@@ -199,9 +199,9 @@ export function QuoteTable({ quotes: initialQuotes, clients }: QuoteTableProps) 
       )}
 
       {/* Table */}
-      <div className="rounded-md border border-white/5 bg-black/20 overflow-hidden glass-card">
+      <div className="rounded-md border border-border bg-black/20 overflow-hidden glass-card">
         <table className="w-full text-sm text-left">
-          <thead className="text-xs text-zinc-400 uppercase bg-white/5">
+          <thead className="text-xs text-muted-foreground uppercase bg-muted">
             <tr>
               <th className="px-6 py-4 font-medium">Cotización</th>
               <th className="px-6 py-4 font-medium">Items</th>
@@ -212,21 +212,21 @@ export function QuoteTable({ quotes: initialQuotes, clients }: QuoteTableProps) 
           </thead>
           <tbody className="divide-y divide-white/5">
             {initialQuotes.length === 0 ? (
-              <tr><td colSpan={5} className="px-6 py-12 text-center text-zinc-500">No hay cotizaciones registradas.</td></tr>
+              <tr><td colSpan={5} className="px-6 py-12 text-center text-muted-foreground">No hay cotizaciones registradas.</td></tr>
             ) : (
               initialQuotes.map((quote) => {
                 const StatusIcon = statusConfig[quote.status].icon;
                 const isSendingThis = sendingId === quote.id;
                 return (
-                  <tr key={quote.id} className="hover:bg-white/5 transition-colors">
+                  <tr key={quote.id} className="hover:bg-accent transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex flex-col">
-                        <span className="font-medium text-zinc-100">{getClientName(quote.clientId)}</span>
-                        <span className="text-xs text-zinc-400 mt-1">Válida hasta: {new Date(quote.validUntil).toLocaleDateString('es-MX')}</span>
+                        <span className="font-medium text-foreground">{getClientName(quote.clientId)}</span>
+                        <span className="text-xs text-muted-foreground mt-1">Válida hasta: {new Date(quote.validUntil).toLocaleDateString('es-MX')}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex flex-col gap-1 text-zinc-300 text-xs">
+                      <div className="flex flex-col gap-1 text-foreground text-xs">
                         {quote.items.map((item, idx) => (
                           <div key={idx} className="flex justify-between items-center max-w-[200px]">
                             <span className="truncate pr-2">{item.quantity}x {item.name}</span>
@@ -235,8 +235,8 @@ export function QuoteTable({ quotes: initialQuotes, clients }: QuoteTableProps) 
                       </div>
                     </td>
                     <td className="px-6 py-4 hidden md:table-cell">
-                      <div className="flex items-center gap-1.5 font-medium text-zinc-200">
-                        <DollarSign className="w-3.5 h-3.5 text-zinc-500" />
+                      <div className="flex items-center gap-1.5 font-medium text-foreground">
+                        <DollarSign className="w-3.5 h-3.5 text-muted-foreground" />
                         {formatCurrency(quote.totalAmount)}
                       </div>
                     </td>
@@ -274,7 +274,7 @@ export function QuoteTable({ quotes: initialQuotes, clients }: QuoteTableProps) 
                           }
                           {isSendingThis ? 'Enviando...' : 'Enviar'}
                         </button>
-                        <button className="p-2 text-zinc-400 hover:text-white hover:bg-white/10 rounded-md transition-colors cursor-pointer">
+                        <button className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors cursor-pointer">
                           <MoreHorizontal className="w-4 h-4" />
                         </button>
                       </div>

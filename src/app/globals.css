@@ -141,18 +141,11 @@
 /* Glassmorphism Utilities */
 @layer utilities {
   .glass-panel {
-    background: rgba(15, 15, 18, 0.5);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+    @apply bg-background/50 backdrop-blur-xl border border-border shadow-lg;
   }
 
   .glass-card {
-    background: rgba(25, 25, 28, 0.4);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    @apply bg-card/40 backdrop-blur-lg border border-border;
   }
 
   .text-fluid-h1 {

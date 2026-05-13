@@ -17,8 +17,8 @@ function Toggle({ enabled, onChange, label, description }: ToggleProps) {
   return (
     <div className="flex items-center justify-between py-3">
       <div>
-        <p className="text-sm font-medium text-zinc-200">{label}</p>
-        <p className="text-xs text-zinc-500 mt-0.5">{description}</p>
+        <p className="text-sm font-medium text-foreground">{label}</p>
+        <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
       </div>
       <button
         onClick={onChange}
@@ -169,14 +169,14 @@ export default function SettingsPage() {
   return (
     <div className="max-w-3xl space-y-8 pb-20">
       <div>
-        <h2 className="text-2xl font-bold text-white">Configuración</h2>
-        <p className="text-sm text-zinc-400">Administra tus preferencias y seguridad.</p>
+        <h2 className="text-2xl font-bold text-foreground">Configuración</h2>
+        <p className="text-sm text-muted-foreground">Administra tus preferencias y seguridad.</p>
       </div>
 
       <div className="space-y-6">
         {/* Notificaciones */}
-        <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-6">
-          <h3 className="text-sm font-semibold text-zinc-300 flex items-center gap-2 mb-4 border-b border-zinc-800 pb-2">
+        <div className="bg-popover/50 border border-border rounded-lg p-6">
+          <h3 className="text-sm font-semibold text-foreground flex items-center gap-2 mb-4 border-b border-border pb-2">
             <Bell className="w-4 h-4" /> Notificaciones por Correo
           </h3>
           
@@ -188,30 +188,30 @@ export default function SettingsPage() {
         </div>
 
         {/* Apariencia */}
-        <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-6">
-          <h3 className="text-sm font-semibold text-zinc-300 flex items-center gap-2 mb-4 border-b border-zinc-800 pb-2">
+        <div className="bg-popover/50 border border-border rounded-lg p-6">
+          <h3 className="text-sm font-semibold text-foreground flex items-center gap-2 mb-4 border-b border-border pb-2">
             <Palette className="w-4 h-4" /> Apariencia
           </h3>
           <div className="flex items-center justify-between">
-            <p className="text-sm text-zinc-200">Tema actual: <span className="capitalize">{resolvedTheme}</span></p>
-            <div className="flex bg-zinc-800 rounded p-1">
-              <button onClick={() => setTheme('dark')} className={`p-2 rounded ${resolvedTheme === 'dark' ? 'bg-zinc-700 text-white' : 'text-zinc-500'}`}><Moon className="w-4 h-4" /></button>
-              <button onClick={() => setTheme('light')} className={`p-2 rounded ${resolvedTheme === 'light' ? 'bg-white text-zinc-900' : 'text-zinc-500'}`}><Sun className="w-4 h-4" /></button>
+            <p className="text-sm text-foreground">Tema actual: <span className="capitalize">{resolvedTheme}</span></p>
+            <div className="flex bg-card rounded p-1">
+              <button onClick={() => setTheme('dark')} className={`p-2 rounded ${resolvedTheme === 'dark' ? 'bg-zinc-700 text-foreground' : 'text-muted-foreground'}`}><Moon className="w-4 h-4" /></button>
+              <button onClick={() => setTheme('light')} className={`p-2 rounded ${resolvedTheme === 'light' ? 'bg-white text-zinc-900' : 'text-muted-foreground'}`}><Sun className="w-4 h-4" /></button>
             </div>
           </div>
         </div>
 
         {/* Regional */}
-        <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-6">
-          <h3 className="text-sm font-semibold text-zinc-300 flex items-center gap-2 mb-4 border-b border-zinc-800 pb-2">
+        <div className="bg-popover/50 border border-border rounded-lg p-6">
+          <h3 className="text-sm font-semibold text-foreground flex items-center gap-2 mb-4 border-b border-border pb-2">
             <Globe className="w-4 h-4" /> Regional
           </h3>
           <div className="grid grid-cols-2 gap-4">
-            <select value={settings.language} onChange={e => setSettings(s => ({ ...s, language: e.target.value }))} className="bg-zinc-800 text-white rounded p-2 text-sm">
+            <select value={settings.language} onChange={e => setSettings(s => ({ ...s, language: e.target.value }))} className="bg-card text-foreground rounded p-2 text-sm">
               <option value="es">Español</option>
               <option value="en">English</option>
             </select>
-            <select value={settings.currency} onChange={e => setSettings(s => ({ ...s, currency: e.target.value }))} className="bg-zinc-800 text-white rounded p-2 text-sm">
+            <select value={settings.currency} onChange={e => setSettings(s => ({ ...s, currency: e.target.value }))} className="bg-card text-foreground rounded p-2 text-sm">
               <option value="MXN">Pesos (MXN)</option>
               <option value="USD">Dólares (USD)</option>
             </select>
@@ -219,14 +219,14 @@ export default function SettingsPage() {
         </div>
 
         {/* Seguridad */}
-        <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-6">
-          <h3 className="text-sm font-semibold text-zinc-300 flex items-center gap-2 mb-4 border-b border-zinc-800 pb-2">
+        <div className="bg-popover/50 border border-border rounded-lg p-6">
+          <h3 className="text-sm font-semibold text-foreground flex items-center gap-2 mb-4 border-b border-border pb-2">
             <Shield className="w-4 h-4" /> Seguridad y Respaldo
           </h3>
           <div className="flex items-center justify-between gap-4 py-3">
             <div>
-              <p className="text-sm font-medium text-zinc-200">MFA / 2FA</p>
-              <p className="text-xs text-zinc-500 mt-0.5">
+              <p className="text-sm font-medium text-foreground">MFA / 2FA</p>
+              <p className="text-xs text-muted-foreground mt-0.5">
                 {mfaConfigured
                   ? 'MFA ya está configurado y es obligatorio para todas las cuentas admin.'
                   : 'MFA es obligatorio para admins. Configúralo para poder entrar al panel.'}
@@ -234,18 +234,18 @@ export default function SettingsPage() {
             </div>
             <button
               onClick={() => router.push('/mfa?next=/dashboard/settings')}
-              className="rounded-lg border border-zinc-700 px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:border-emerald-500/40 hover:text-white"
+              className="rounded-lg border border-border px-3 py-2 text-xs font-medium text-foreground transition-colors hover:border-emerald-500/40 hover:text-foreground"
             >
               {mfaConfigured ? 'Verificar MFA' : 'Configurar MFA'}
             </button>
           </div>
           
-          <div className="mt-4 pt-4 border-t border-zinc-800">
-            <p className="text-xs text-zinc-500 mb-3 italic">Nota: El respaldo automático se ejecuta diariamente. Puedes descargar uno manual ahora:</p>
+          <div className="mt-4 pt-4 border-t border-border">
+            <p className="text-xs text-muted-foreground mb-3 italic">Nota: El respaldo automático se ejecuta diariamente. Puedes descargar uno manual ahora:</p>
             <button 
               onClick={handleManualBackup} 
               disabled={exporting}
-              className="flex items-center gap-2 text-xs bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-3 py-2 rounded transition-colors"
+              className="flex items-center gap-2 text-xs bg-card hover:bg-zinc-700 text-foreground px-3 py-2 rounded transition-colors"
             >
               {exporting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Download className="w-3 h-3" />}
               Descargar Respaldo JSON Completo
@@ -258,7 +258,7 @@ export default function SettingsPage() {
       <div className="flex items-center justify-end gap-4 mt-8">
         {error && <span className="text-xs text-red-500 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {error}</span>}
         {saved && <span className="text-xs text-emerald-500 flex items-center gap-1"><CheckCircle className="w-3 h-3" /> Cambios guardados</span>}
-        <button onClick={handleSave} disabled={saving} className="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2 rounded font-medium flex items-center gap-2 disabled:bg-zinc-700">
+        <button onClick={handleSave} disabled={saving} className="bg-emerald-600 hover:bg-emerald-500 text-foreground px-6 py-2 rounded font-medium flex items-center gap-2 disabled:bg-muted">
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
           {saving ? 'Guardando...' : 'Guardar Configuración'}
         </button>

@@ -89,7 +89,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 flex">
+    <div className="min-h-screen bg-background flex">
       {/* Panel Izquierdo — Branding */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-zinc-900 via-zinc-950 to-black" />
@@ -104,22 +104,22 @@ export default function LoginPage() {
         <div className="relative z-10 flex flex-col justify-between p-12 w-full">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center">
-              <Camera className="w-5 h-5 text-white" />
+              <Camera className="w-5 h-5 text-foreground" />
             </div>
-            <span className="text-xl font-bold text-white tracking-wider">BERNAL PHOTO</span>
+            <span className="text-xl font-bold text-foreground tracking-wider">BERNAL PHOTO</span>
           </div>
 
           <div>
-            <h1 className="text-5xl font-bold text-white leading-tight tracking-tight">
+            <h1 className="text-5xl font-bold text-foreground leading-tight tracking-tight">
               Sistema<br />Operativo<br />
               <span className="bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">Fotográfico</span>
             </h1>
-            <p className="text-zinc-400 mt-6 text-lg max-w-md leading-relaxed">
+            <p className="text-muted-foreground mt-6 text-lg max-w-md leading-relaxed">
               Gestiona clientes, sesiones, cotizaciones y contratos con integridad documental SHA-256.
             </p>
           </div>
 
-          <p className="text-zinc-600 text-sm">
+          <p className="text-muted-foreground text-sm">
             © {new Date().getFullYear()} Bernal Photo OS · v1.0.0
           </p>
         </div>
@@ -131,24 +131,24 @@ export default function LoginPage() {
           {/* Logo móvil */}
           <div className="flex items-center gap-3 mb-10 lg:hidden">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center">
-              <Camera className="w-4 h-4 text-white" />
+              <Camera className="w-4 h-4 text-foreground" />
             </div>
-            <span className="text-lg font-bold text-white tracking-wider">BERNAL PHOTO</span>
+            <span className="text-lg font-bold text-foreground tracking-wider">BERNAL PHOTO</span>
           </div>
 
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-white">Iniciar Sesión</h2>
-            <p className="text-zinc-500 text-sm mt-2">Accede al panel de administración.</p>
+            <h2 className="text-2xl font-bold text-foreground">Iniciar Sesión</h2>
+            <p className="text-muted-foreground text-sm mt-2">Accede al panel de administración.</p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-5">
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-zinc-400 mb-1.5">
+              <label htmlFor="email" className="block text-sm font-medium text-muted-foreground mb-1.5">
                 Correo electrónico
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <input
                   id="email"
                   type="email"
@@ -156,18 +156,18 @@ export default function LoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@bernalphoto.com"
                   required
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 transition-all"
+                  className="w-full bg-popover border border-border rounded-lg pl-10 pr-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 transition-all"
                 />
               </div>
             </div>
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-zinc-400 mb-1.5">
+              <label htmlFor="password" className="block text-sm font-medium text-muted-foreground mb-1.5">
                 Contraseña
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
@@ -175,12 +175,12 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg pl-10 pr-10 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 transition-all"
+                  className="w-full bg-popover border border-border rounded-lg pl-10 pr-10 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/50 transition-all"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors cursor-pointer"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -199,7 +199,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading || !email || !password}
-              className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-zinc-800 disabled:text-zinc-600 text-white px-6 py-2.5 rounded-lg font-semibold text-sm transition-all cursor-pointer disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-card disabled:text-muted-foreground text-foreground px-6 py-2.5 rounded-lg font-semibold text-sm transition-all cursor-pointer disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>

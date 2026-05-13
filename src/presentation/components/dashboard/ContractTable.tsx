@@ -44,7 +44,7 @@ interface ContractTableProps {
 }
 
 const statusConfig: Record<ContractStatus, { label: string; color: string; icon: React.ElementType }> = {
-  draft: { label: 'Borrador', color: 'bg-zinc-500/10 text-zinc-400 border-zinc-500/20', icon: Clock },
+  draft: { label: 'Borrador', color: 'bg-zinc-500/10 text-muted-foreground border-border/20', icon: Clock },
   sent: { label: 'Enviado para firma', color: 'bg-blue-500/10 text-blue-400 border-blue-500/20', icon: Send },
   signed: { label: 'Firmado ✓', color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20', icon: FileSignature },
 };
@@ -307,10 +307,10 @@ export function ContractTable({ contracts: initialContracts, clients, quotes }: 
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-semibold text-zinc-100 flex items-center gap-2">
+          <h1 className="text-2xl font-semibold text-foreground flex items-center gap-2">
             Contratos <span className="px-2 py-0.5 rounded text-xs bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 font-medium">SHA-256</span>
           </h1>
-          <p className="text-sm text-zinc-400 mt-1">Gestiona y firma contratos con integridad criptográfica.</p>
+          <p className="text-sm text-muted-foreground mt-1">Gestiona y firma contratos con integridad criptográfica.</p>
         </div>
         <button onClick={() => setShowModal(true)} className="flex items-center gap-2 bg-zinc-100 hover:bg-white text-zinc-900 px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm cursor-pointer">
           <FilePlus className="w-4 h-4" />
@@ -326,7 +326,7 @@ export function ContractTable({ contracts: initialContracts, clients, quotes }: 
             <p className="text-sm font-medium text-blue-300 mb-1">Enlace de firma generado</p>
             <p className="text-xs text-blue-400/80 break-all font-mono">{lastSigningUrl}</p>
           </div>
-          <button onClick={() => setLastSigningUrl(null)} className="text-blue-400 hover:text-white">
+          <button onClick={() => setLastSigningUrl(null)} className="text-blue-400 hover:text-foreground">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -335,32 +335,32 @@ export function ContractTable({ contracts: initialContracts, clients, quotes }: 
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-zinc-900 border border-white/10 rounded-xl p-6 w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-200">
+          <div className="bg-popover border border-border rounded-xl p-6 w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold text-zinc-100">{editingContractId ? 'Editar Contrato' : 'Nuevo Contrato'}</h2>
-              <button onClick={closeModal} className="p-1 text-zinc-400 hover:text-white rounded-md hover:bg-white/10 transition-colors cursor-pointer"><X className="w-5 h-5" /></button>
+              <h2 className="text-lg font-semibold text-foreground">{editingContractId ? 'Editar Contrato' : 'Nuevo Contrato'}</h2>
+              <button onClick={closeModal} className="p-1 text-muted-foreground hover:text-foreground rounded-md hover:bg-accent transition-colors cursor-pointer"><X className="w-5 h-5" /></button>
             </div>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-zinc-400 mb-1 block">Cliente *</label>
+                  <label className="text-xs text-muted-foreground mb-1 block">Cliente *</label>
                   <select
                     value={form.clientId}
                     onChange={e => handleClientOrQuoteChange(e.target.value, '')}
                     disabled={!!editingContractId}
-                    className="w-full bg-zinc-800 border border-white/10 rounded-md px-3 py-2 text-sm text-zinc-100 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-colors disabled:opacity-40"
+                    className="w-full bg-card border border-border rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-colors disabled:opacity-40"
                   >
                     <option value="">Seleccionar cliente...</option>
                     {clients.map(c => <option key={c.id} value={c.id}>{c.firstName} {c.lastName}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs text-zinc-400 mb-1 block">Cotización (opcional)</label>
+                  <label className="text-xs text-muted-foreground mb-1 block">Cotización (opcional)</label>
                   <select
                     value={form.quoteId}
                     onChange={e => handleClientOrQuoteChange(form.clientId, e.target.value)}
                     disabled={!form.clientId || !!editingContractId}
-                    className="w-full bg-zinc-800 border border-white/10 rounded-md px-3 py-2 text-sm text-zinc-100 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-colors disabled:opacity-40"
+                    className="w-full bg-card border border-border rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-colors disabled:opacity-40"
                   >
                     <option value="">Sin cotización vinculada</option>
                     {clientQuotes.map(q => (
@@ -380,33 +380,33 @@ export function ContractTable({ contracts: initialContracts, clients, quotes }: 
               )}
 
               <div>
-                <label className="text-xs text-zinc-400 mb-1 block">Contenido del Contrato *</label>
+                <label className="text-xs text-muted-foreground mb-1 block">Contenido del Contrato *</label>
                 <textarea
                   value={form.content}
                   onChange={e => setForm({ ...form, content: e.target.value })}
                   rows={10}
-                  className="w-full bg-zinc-800 border border-white/10 rounded-md px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-colors resize-y font-mono"
+                  className="w-full bg-card border border-border rounded-md px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-colors resize-y font-mono"
                   placeholder="Selecciona un cliente y cotización para pre-generar el contrato automáticamente, o escríbelo manualmente..."
                 />
               </div>
 
               {/* Session date & type */}
-              <div className="grid grid-cols-2 gap-3 border-t border-white/5 pt-4">
+              <div className="grid grid-cols-2 gap-3 border-t border-border pt-4">
                 <div>
-                  <label className="text-xs text-zinc-400 mb-1 block">📅 Fecha de Sesión *</label>
+                  <label className="text-xs text-muted-foreground mb-1 block">📅 Fecha de Sesión *</label>
                   <input
                     type="datetime-local"
                     value={form.sessionDate}
                     onChange={e => setForm({ ...form, sessionDate: e.target.value })}
-                    className="w-full bg-zinc-800 border border-white/10 rounded-md px-3 py-2 text-sm text-zinc-100 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-colors"
+                    className="w-full bg-card border border-border rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-colors"
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-zinc-400 mb-1 block">Tipo de Sesión</label>
+                  <label className="text-xs text-muted-foreground mb-1 block">Tipo de Sesión</label>
                   <select
                     value={form.sessionType}
                     onChange={e => setForm({ ...form, sessionType: e.target.value as typeof form.sessionType })}
-                    className="w-full bg-zinc-800 border border-white/10 rounded-md px-3 py-2 text-sm text-zinc-100 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-colors"
+                    className="w-full bg-card border border-border rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-colors"
                   >
                     <option value="wedding">Boda</option>
                     <option value="engagement">Compromiso</option>
@@ -416,15 +416,15 @@ export function ContractTable({ contracts: initialContracts, clients, quotes }: 
                 </div>
               </div>
               <div>
-                <label className="text-xs text-zinc-400 mb-1 block">📍 Ubicación de la Sesión</label>
+                <label className="text-xs text-muted-foreground mb-1 block">📍 Ubicación de la Sesión</label>
                 <input
                   value={form.sessionLocation}
                   onChange={e => setForm({ ...form, sessionLocation: e.target.value })}
-                  className="w-full bg-zinc-800 border border-white/10 rounded-md px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-colors"
+                  className="w-full bg-card border border-border rounded-md px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-colors"
                   placeholder="Hacienda Los Pinos, Guadalajara"
                 />
               </div>
-              <p className="text-xs text-zinc-500 -mt-2">Fecha, tipo y ubicación se copiarán automáticamente al registro de sesión al firmar.</p>
+              <p className="text-xs text-muted-foreground -mt-2">Fecha, tipo y ubicación se copiarán automáticamente al registro de sesión al firmar.</p>
 
               <div className="bg-amber-500/5 border border-amber-500/20 rounded-md p-3 flex items-start gap-2">
                 <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
@@ -434,7 +434,7 @@ export function ContractTable({ contracts: initialContracts, clients, quotes }: 
               <button
                 onClick={handleCreateOrUpdate}
                 disabled={!form.clientId || !form.content || saving}
-                className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-zinc-700 disabled:text-zinc-500 text-white px-4 py-2.5 rounded-md font-medium text-sm transition-colors cursor-pointer disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-muted disabled:text-muted-foreground text-foreground px-4 py-2.5 rounded-md font-medium text-sm transition-colors cursor-pointer disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {saving && <Loader2 className="w-4 h-4 animate-spin" />}
                 {saving ? 'Guardando...' : editingContractId ? 'Actualizar Contrato' : 'Guardar Contrato'}
@@ -445,9 +445,9 @@ export function ContractTable({ contracts: initialContracts, clients, quotes }: 
       )}
 
       {/* Table */}
-      <div className="rounded-md border border-white/5 bg-black/20 overflow-hidden glass-card">
+      <div className="rounded-md border border-border bg-black/20 overflow-hidden glass-card">
         <table className="w-full text-sm text-left">
-          <thead className="text-xs text-zinc-400 uppercase bg-white/5">
+          <thead className="text-xs text-muted-foreground uppercase bg-muted">
             <tr>
               <th className="px-6 py-4 font-medium">Contrato</th>
               <th className="px-6 py-4 font-medium">Estado</th>
@@ -457,7 +457,7 @@ export function ContractTable({ contracts: initialContracts, clients, quotes }: 
           </thead>
           <tbody className="divide-y divide-white/5">
             {initialContracts.length === 0 ? (
-              <tr><td colSpan={4} className="px-6 py-12 text-center text-zinc-500">No hay contratos registrados.</td></tr>
+              <tr><td colSpan={4} className="px-6 py-12 text-center text-muted-foreground">No hay contratos registrados.</td></tr>
             ) : (
               initialContracts.map((contract) => {
                 const StatusIcon = statusConfig[contract.status].icon;
@@ -465,11 +465,11 @@ export function ContractTable({ contracts: initialContracts, clients, quotes }: 
                 const isDownloadingThis = loadingPdfId === contract.id;
                 const isCreatingSession = creatingSessionId === contract.id;
                 return (
-                  <tr key={contract.id} className="hover:bg-white/5 transition-colors">
+                  <tr key={contract.id} className="hover:bg-accent transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex flex-col">
-                        <span className="font-medium text-zinc-100">{getClientName(contract.clientId)}</span>
-                        <span className="text-xs text-zinc-500 mt-1 truncate max-w-[260px] font-mono">
+                        <span className="font-medium text-foreground">{getClientName(contract.clientId)}</span>
+                        <span className="text-xs text-muted-foreground mt-1 truncate max-w-[260px] font-mono">
                           {contract.content.substring(0, 55)}...
                         </span>
                         {contract.signedAt && (
@@ -492,7 +492,7 @@ export function ContractTable({ contracts: initialContracts, clients, quotes }: 
                           <span className="truncate max-w-[180px]" title={contract.hashSignature}>{contract.hashSignature}</span>
                         </div>
                       ) : (
-                        <div className="flex items-center gap-2 text-zinc-500 text-xs">
+                        <div className="flex items-center gap-2 text-muted-foreground text-xs">
                           <ShieldAlert className="w-4 h-4" />
                           <span>Sin Sellar</span>
                         </div>
@@ -541,7 +541,7 @@ export function ContractTable({ contracts: initialContracts, clients, quotes }: 
                           <button
                             onClick={() => handleEdit(contract)}
                             title="Editar contrato"
-                            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-zinc-400 hover:text-white hover:bg-white/10 rounded-md transition-colors cursor-pointer"
+                            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors cursor-pointer"
                           >
                             <Edit className="w-3.5 h-3.5" />
                           </button>

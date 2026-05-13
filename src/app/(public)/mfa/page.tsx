@@ -228,15 +228,15 @@ export default function MfaPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-zinc-950 text-white flex items-center justify-center">
+      <main className="min-h-screen bg-background text-foreground flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-emerald-500" />
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-zinc-950 text-white px-6 py-12">
-      <div className="mx-auto max-w-2xl rounded-3xl border border-zinc-800 bg-zinc-900/80 p-8 shadow-2xl shadow-black/20">
+    <main className="min-h-screen bg-background text-foreground px-6 py-12">
+      <div className="mx-auto max-w-2xl rounded-3xl border border-border bg-popover/80 p-8 shadow-2xl shadow-black/20">
         <div className="flex items-start gap-4">
           <div className="rounded-2xl bg-emerald-500/10 p-3 text-emerald-400">
             <Shield className="h-6 w-6" />
@@ -244,7 +244,7 @@ export default function MfaPage() {
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-400">Administrador seguro</p>
             <h1 className="mt-3 text-3xl font-semibold tracking-tight">Autenticación multifactor</h1>
-            <p className="mt-3 text-sm leading-6 text-zinc-400">
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">
               Refuerza el acceso al panel administrativo con un código temporal generado por tu app autenticadora.
             </p>
           </div>
@@ -266,12 +266,12 @@ export default function MfaPage() {
 
         {mode === 'setup' && (
           <section className="mt-8 space-y-6">
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-950/60 p-5">
-              <div className="flex items-center gap-3 text-zinc-200">
+            <div className="rounded-2xl border border-border bg-background/60 p-5">
+              <div className="flex items-center gap-3 text-foreground">
                 <Smartphone className="h-5 w-5 text-emerald-400" />
                 <h2 className="text-sm font-semibold">Paso 1: crear el factor TOTP</h2>
               </div>
-              <p className="mt-3 text-sm text-zinc-400">
+              <p className="mt-3 text-sm text-muted-foreground">
                 Usa Google Authenticator, Authy, 1Password o cualquier app compatible con TOTP.
               </p>
 
@@ -279,36 +279,36 @@ export default function MfaPage() {
                 <button
                   onClick={startEnrollment}
                   disabled={submitting}
-                  className="mt-5 inline-flex items-center justify-center rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-500 disabled:bg-zinc-700"
+                  className="mt-5 inline-flex items-center justify-center rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-emerald-500 disabled:bg-muted"
                 >
                   {submitting ? 'Preparando QR...' : 'Comenzar configuración'}
                 </button>
               ) : (
                 <div className="mt-6 grid gap-6 md:grid-cols-[220px,1fr]">
-                  <div className="rounded-2xl border border-zinc-800 bg-white p-4">
+                  <div className="rounded-2xl border border-border bg-white p-4">
                     <Image src={qrCode} alt="Código QR para MFA" width={256} height={256} className="h-full w-full" unoptimized />
                   </div>
                   <div className="space-y-4">
                     <div>
-                      <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">Clave manual</p>
-                      <p className="mt-2 break-all rounded-xl border border-zinc-800 bg-zinc-950 px-4 py-3 font-mono text-sm text-zinc-200">
+                      <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Clave manual</p>
+                      <p className="mt-2 break-all rounded-xl border border-border bg-background px-4 py-3 font-mono text-sm text-foreground">
                         {secret}
                       </p>
                     </div>
                     <form onSubmit={enableOrVerifyMfa} className="space-y-3">
-                      <label className="block text-sm font-medium text-zinc-300">Paso 2: ingresa el código de 6 dígitos</label>
+                      <label className="block text-sm font-medium text-foreground">Paso 2: ingresa el código de 6 dígitos</label>
                       <input
                         value={code}
                         onChange={(event) => setCode(event.target.value.replace(/\D/g, '').slice(0, 6))}
                         inputMode="numeric"
                         autoComplete="one-time-code"
                         placeholder="123456"
-                        className="w-full rounded-xl border border-zinc-800 bg-zinc-950 px-4 py-3 text-lg tracking-[0.3em] text-white outline-none transition-colors focus:border-emerald-500"
+                        className="w-full rounded-xl border border-border bg-background px-4 py-3 text-lg tracking-[0.3em] text-foreground outline-none transition-colors focus:border-emerald-500"
                       />
                       <button
                         type="submit"
                         disabled={submitting || code.length !== 6}
-                        className="inline-flex items-center justify-center rounded-lg bg-white px-4 py-2 text-sm font-medium text-zinc-950 transition-colors hover:bg-zinc-200 disabled:bg-zinc-700 disabled:text-zinc-400"
+                        className="inline-flex items-center justify-center rounded-lg bg-white px-4 py-2 text-sm font-medium text-zinc-950 transition-colors hover:bg-zinc-200 disabled:bg-muted disabled:text-muted-foreground"
                       >
                         {submitting ? 'Verificando...' : 'Activar MFA'}
                       </button>
@@ -321,9 +321,9 @@ export default function MfaPage() {
         )}
 
         {mode === 'verify' && (
-          <section className="mt-8 rounded-2xl border border-zinc-800 bg-zinc-950/60 p-5">
-            <h2 className="text-sm font-semibold text-zinc-200">Verifica tu código MFA para continuar</h2>
-            <p className="mt-3 text-sm text-zinc-400">
+          <section className="mt-8 rounded-2xl border border-border bg-background/60 p-5">
+            <h2 className="text-sm font-semibold text-foreground">Verifica tu código MFA para continuar</h2>
+            <p className="mt-3 text-sm text-muted-foreground">
               Tu cuenta de administrador ya tiene MFA activo. Ingresa el código actual de tu app autenticadora para elevar la sesión a AAL2.
             </p>
             <form onSubmit={enableOrVerifyMfa} className="mt-5 space-y-3">
@@ -333,12 +333,12 @@ export default function MfaPage() {
                 inputMode="numeric"
                 autoComplete="one-time-code"
                 placeholder="123456"
-                className="w-full rounded-xl border border-zinc-800 bg-zinc-950 px-4 py-3 text-lg tracking-[0.3em] text-white outline-none transition-colors focus:border-emerald-500"
+                className="w-full rounded-xl border border-border bg-background px-4 py-3 text-lg tracking-[0.3em] text-foreground outline-none transition-colors focus:border-emerald-500"
               />
               <button
                 type="submit"
                 disabled={submitting || code.length !== 6}
-                className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-500 disabled:bg-zinc-700"
+                className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-emerald-500 disabled:bg-muted"
               >
                 {submitting ? 'Verificando...' : 'Validar y entrar'}
               </button>
@@ -349,7 +349,7 @@ export default function MfaPage() {
         {mode === 'active' && (
           <section className="mt-8 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-5">
             <h2 className="text-sm font-semibold text-emerald-300">MFA activo</h2>
-            <p className="mt-3 text-sm text-zinc-300">
+            <p className="mt-3 text-sm text-foreground">
               Tu sesión actual ya fue verificada con un segundo factor. El MFA es obligatorio para cuentas admin.
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
