@@ -444,124 +444,229 @@ export function ContractTable({ contracts: initialContracts, clients, quotes }: 
         </div>
       )}
 
-      {/* Table */}
+      {/* Content */}
       <div className="rounded-md border border-border bg-black/20 overflow-hidden glass-card">
-        <table className="w-full text-sm text-left">
-          <thead className="text-xs text-muted-foreground uppercase bg-muted">
-            <tr>
-              <th className="px-6 py-4 font-medium">Contrato</th>
-              <th className="px-6 py-4 font-medium">Estado</th>
-              <th className="px-6 py-4 font-medium hidden md:table-cell">Sello SHA-256</th>
-              <th className="px-6 py-4 font-medium text-right">Acciones</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-white/5">
-            {initialContracts.length === 0 ? (
-              <tr><td colSpan={4} className="px-6 py-12 text-center text-muted-foreground">No hay contratos registrados.</td></tr>
-            ) : (
-              initialContracts.map((contract) => {
-                const StatusIcon = statusConfig[contract.status].icon;
-                const isSendingThis = sendingId === contract.id;
-                const isDownloadingThis = loadingPdfId === contract.id;
-                const isCreatingSession = creatingSessionId === contract.id;
-                return (
-                  <tr key={contract.id} className="hover:bg-accent transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="flex flex-col">
-                        <span className="font-medium text-foreground">{getClientName(contract.clientId)}</span>
-                        <span className="text-xs text-muted-foreground mt-1 truncate max-w-[260px] font-mono">
-                          {contract.content.substring(0, 55)}...
-                        </span>
-                        {contract.signedAt && (
-                          <span className="text-xs text-emerald-400 mt-1">
-                            Firmado: {new Date(contract.signedAt).toLocaleDateString('es-MX')}
+        {/* Desktop Table */}
+        <div className="hidden md:block overflow-x-auto">
+          <table className="w-full text-sm text-left">
+            <thead className="text-xs text-muted-foreground uppercase bg-muted">
+              <tr>
+                <th className="px-6 py-4 font-medium">Contrato</th>
+                <th className="px-6 py-4 font-medium">Estado</th>
+                <th className="px-6 py-4 font-medium hidden md:table-cell">Sello SHA-256</th>
+                <th className="px-6 py-4 font-medium text-right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border/20">
+              {initialContracts.length === 0 ? (
+                <tr><td colSpan={4} className="px-6 py-12 text-center text-muted-foreground">No hay contratos registrados.</td></tr>
+              ) : (
+                initialContracts.map((contract) => {
+                  const StatusIcon = statusConfig[contract.status].icon;
+                  const isSendingThis = sendingId === contract.id;
+                  const isDownloadingThis = loadingPdfId === contract.id;
+                  const isCreatingSession = creatingSessionId === contract.id;
+                  return (
+                    <tr key={contract.id} className="hover:bg-accent transition-colors">
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col">
+                          <span className="font-medium text-foreground">{getClientName(contract.clientId)}</span>
+                          <span className="text-xs text-muted-foreground mt-1 truncate max-w-[260px] font-mono">
+                            {contract.content.substring(0, 55)}...
                           </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-medium ${statusConfig[contract.status].color}`}>
-                        <StatusIcon className="w-3.5 h-3.5" />
-                        {statusConfig[contract.status].label}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 hidden md:table-cell">
-                      {contract.hashSignature ? (
-                        <div className="flex items-center gap-2 text-emerald-400/90 text-xs font-mono bg-emerald-500/5 px-2 py-1 rounded border border-emerald-500/10">
-                          <ShieldCheck className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                          <span className="truncate max-w-[180px]" title={contract.hashSignature}>{contract.hashSignature}</span>
+                          {contract.signedAt && (
+                            <span className="text-xs text-emerald-400 mt-1">
+                              Firmado: {new Date(contract.signedAt).toLocaleDateString('es-MX')}
+                            </span>
+                          )}
                         </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-medium ${statusConfig[contract.status].color}`}>
+                          <StatusIcon className="w-3.5 h-3.5" />
+                          {statusConfig[contract.status].label}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 hidden md:table-cell">
+                        {contract.hashSignature ? (
+                          <div className="flex items-center gap-2 text-emerald-400/90 text-xs font-mono bg-emerald-500/5 px-2 py-1 rounded border border-emerald-500/10">
+                            <ShieldCheck className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                            <span className="truncate max-w-[180px]" title={contract.hashSignature}>{contract.hashSignature}</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 text-muted-foreground text-xs">
+                            <ShieldAlert className="w-4 h-4" />
+                            <span>Sin Sellar</span>
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          {/* Download PDF */}
+                          <button
+                            onClick={() => handleDownloadPDF(contract)}
+                            disabled={isDownloadingThis}
+                            title="Descargar contrato en PDF"
+                            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-emerald-400 hover:text-emerald-300 hover:bg-emerald-400/10 rounded-md transition-colors cursor-pointer disabled:opacity-50"
+                          >
+                            {isDownloadingThis ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+                            PDF
+                          </button>
+
+                          {/* Send signing link — only for draft contracts */}
+                          {contract.status !== 'signed' && (
+                            <button
+                              onClick={() => handleSendLink(contract.id)}
+                              disabled={isSendingThis}
+                              title="Enviar enlace de firma al cliente"
+                              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-blue-400 hover:text-blue-300 hover:bg-blue-400/10 rounded-md transition-colors cursor-pointer disabled:opacity-50"
+                            >
+                              {isSendingThis ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+                              {isSendingThis ? 'Enviando...' : 'Firmar'}
+                            </button>
+                          )}
+
+                          {/* Signed: create session manually if needed */}
+                          {contract.status === 'signed' && (
+                            <button
+                              onClick={() => handleCreateSession(contract.id)}
+                              disabled={isCreatingSession}
+                              title="Crear sesión desde este contrato firmado"
+                              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-amber-400 hover:text-amber-300 hover:bg-amber-400/10 rounded-md transition-colors cursor-pointer disabled:opacity-50"
+                            >
+                              {isCreatingSession ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CalendarPlus className="w-3.5 h-3.5" />}
+                              {isCreatingSession ? 'Creando...' : 'Sesión'}
+                            </button>
+                          )}
+
+                          {contract.status !== 'signed' && (
+                            <button
+                              onClick={() => handleEdit(contract)}
+                              title="Editar contrato"
+                              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors cursor-pointer"
+                            >
+                              <Edit className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                          <button 
+                            onClick={() => handleDelete(contract.id)}
+                            disabled={deletingId === contract.id}
+                            title="Eliminar contrato"
+                            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-red-400 hover:text-red-300 hover:bg-red-400/10 rounded-md transition-colors cursor-pointer disabled:opacity-50"
+                          >
+                            {deletingId === contract.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Mobile Cards */}
+        <div className="block md:hidden divide-y divide-border/20">
+          {initialContracts.length === 0 ? (
+            <div className="p-8 text-center text-muted-foreground text-sm">No hay contratos registrados.</div>
+          ) : (
+            initialContracts.map((contract) => {
+              const StatusIcon = statusConfig[contract.status].icon;
+              const isSendingThis = sendingId === contract.id;
+              const isDownloadingThis = loadingPdfId === contract.id;
+              const isCreatingSession = creatingSessionId === contract.id;
+              
+              return (
+                <div key={contract.id} className="p-5 flex flex-col gap-4 hover:bg-accent/30 transition-colors">
+                  {/* Header: Client & Status */}
+                  <div className="flex justify-between items-start gap-3">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-foreground text-base truncate">{getClientName(contract.clientId)}</h3>
+                      {contract.signedAt ? (
+                        <p className="text-xs text-emerald-400 mt-1">Firmado: {new Date(contract.signedAt).toLocaleDateString('es-MX')}</p>
                       ) : (
-                        <div className="flex items-center gap-2 text-muted-foreground text-xs">
-                          <ShieldAlert className="w-4 h-4" />
-                          <span>Sin Sellar</span>
-                        </div>
+                        <p className="text-xs text-muted-foreground mt-1 truncate">Creado: {new Date(contract.createdAt).toLocaleDateString('es-MX')}</p>
                       )}
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        {/* Download PDF */}
-                        <button
-                          onClick={() => handleDownloadPDF(contract)}
-                          disabled={isDownloadingThis}
-                          title="Descargar contrato en PDF"
-                          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-emerald-400 hover:text-emerald-300 hover:bg-emerald-400/10 rounded-md transition-colors cursor-pointer disabled:opacity-50"
-                        >
-                          {isDownloadingThis ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
-                          PDF
-                        </button>
+                    </div>
+                    <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-medium shrink-0 ${statusConfig[contract.status].color}`}>
+                      <StatusIcon className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">{statusConfig[contract.status].label}</span>
+                    </div>
+                  </div>
 
-                        {/* Send signing link — only for draft contracts */}
-                        {contract.status !== 'signed' && (
-                          <button
-                            onClick={() => handleSendLink(contract.id)}
-                            disabled={isSendingThis}
-                            title="Enviar enlace de firma al cliente"
-                            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-blue-400 hover:text-blue-300 hover:bg-blue-400/10 rounded-md transition-colors cursor-pointer disabled:opacity-50"
-                          >
-                            {isSendingThis ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
-                            {isSendingThis ? 'Enviando...' : 'Firmar'}
-                          </button>
-                        )}
-
-                        {/* Signed: create session manually if needed */}
-                        {contract.status === 'signed' && (
-                          <button
-                            onClick={() => handleCreateSession(contract.id)}
-                            disabled={isCreatingSession}
-                            title="Crear sesión desde este contrato firmado"
-                            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-amber-400 hover:text-amber-300 hover:bg-amber-400/10 rounded-md transition-colors cursor-pointer disabled:opacity-50"
-                          >
-                            {isCreatingSession ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CalendarPlus className="w-3.5 h-3.5" />}
-                            {isCreatingSession ? 'Creando...' : 'Sesión'}
-                          </button>
-                        )}
-
-                        {contract.status !== 'signed' && (
-                          <button
-                            onClick={() => handleEdit(contract)}
-                            title="Editar contrato"
-                            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors cursor-pointer"
-                          >
-                            <Edit className="w-3.5 h-3.5" />
-                          </button>
-                        )}
-                        <button 
-                          onClick={() => handleDelete(contract.id)}
-                          disabled={deletingId === contract.id}
-                          title="Eliminar contrato"
-                          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-red-400 hover:text-red-300 hover:bg-red-400/10 rounded-md transition-colors cursor-pointer disabled:opacity-50"
-                        >
-                          {deletingId === contract.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
-                        </button>
+                  {/* Body: SHA & Snippet */}
+                  <div className="bg-background/50 rounded-lg p-3 space-y-2.5 border border-border/50">
+                    {contract.hashSignature ? (
+                      <div className="flex items-center gap-2 text-emerald-400/90 text-xs font-mono">
+                        <ShieldCheck className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                        <span className="truncate">{contract.hashSignature}</span>
                       </div>
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
+                    ) : (
+                      <div className="flex items-center gap-2 text-muted-foreground text-xs">
+                        <ShieldAlert className="w-4 h-4" />
+                        <span>Sin Sello SHA-256</span>
+                      </div>
+                    )}
+                    <p className="text-xs text-muted-foreground truncate font-mono pt-2 border-t border-border/50">
+                      {contract.content.substring(0, 60)}...
+                    </p>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex flex-wrap gap-2 mt-1">
+                    <button
+                      onClick={() => handleDownloadPDF(contract)}
+                      disabled={isDownloadingThis}
+                      className="flex-1 min-w-[120px] flex items-center justify-center gap-2 py-2.5 rounded-lg bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 text-sm font-medium transition-colors disabled:opacity-50 cursor-pointer"
+                    >
+                      {isDownloadingThis ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                      PDF
+                    </button>
+
+                    {contract.status !== 'signed' && (
+                      <button
+                        onClick={() => handleSendLink(contract.id)}
+                        disabled={isSendingThis}
+                        className="flex-1 min-w-[120px] flex items-center justify-center gap-2 py-2.5 rounded-lg bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 text-sm font-medium transition-colors disabled:opacity-50 cursor-pointer"
+                      >
+                        {isSendingThis ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                        Firma
+                      </button>
+                    )}
+
+                    {contract.status === 'signed' && (
+                      <button
+                        onClick={() => handleCreateSession(contract.id)}
+                        disabled={isCreatingSession}
+                        className="flex-1 min-w-[120px] flex items-center justify-center gap-2 py-2.5 rounded-lg bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 text-sm font-medium transition-colors disabled:opacity-50 cursor-pointer"
+                      >
+                        {isCreatingSession ? <Loader2 className="w-4 h-4 animate-spin" /> : <CalendarPlus className="w-4 h-4" />}
+                        Sesión
+                      </button>
+                    )}
+
+                    {contract.status !== 'signed' && (
+                      <button
+                        onClick={() => handleEdit(contract)}
+                        className="p-2.5 rounded-lg bg-muted text-foreground hover:bg-accent transition-colors cursor-pointer shrink-0"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                    )}
+                    <button 
+                      onClick={() => handleDelete(contract.id)}
+                      disabled={deletingId === contract.id}
+                      className="p-2.5 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors cursor-pointer shrink-0 disabled:opacity-50"
+                    >
+                      {deletingId === contract.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
       </div>
     </div>
   );

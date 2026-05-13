@@ -115,6 +115,10 @@ export function Header() {
         else if (diff < 86400) time = `Hace ${Math.floor(diff / 3600)} horas`;
         else time = date.toLocaleDateString();
 
+        const lastReadStr = localStorage.getItem('bernal_last_read_notifs');
+        const lastReadDate = lastReadStr ? new Date(lastReadStr).getTime() : 0;
+        const isUnread = date.getTime() > lastReadDate;
+
         return {
           id: log.id,
           icon: Icon,
@@ -122,7 +126,7 @@ export function Header() {
           title,
           description,
           time,
-          unread: true, // For now, we can implement unread status in DB later
+          unread: isUnread,
         };
       });
 
@@ -186,6 +190,7 @@ export function Header() {
   }, []);
 
   const markAllRead = () => {
+    localStorage.setItem('bernal_last_read_notifs', new Date().toISOString());
     setNotifications(notifications.map(n => ({ ...n, unread: false })));
   };
 
@@ -291,7 +296,7 @@ export function Header() {
 
           {/* Notifications Dropdown */}
           {showNotifications && (
-            <div className="absolute right-0 top-full mt-2 w-96 bg-popover border border-border rounded-xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+            <div className="absolute right-0 sm:-right-4 md:right-0 top-full mt-2 w-[calc(100vw-2rem)] sm:w-96 bg-popover border border-border rounded-xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50 origin-top-right">
               <div className="flex items-center justify-between px-4 py-3 border-b border-border">
                 <h3 className="text-sm font-semibold text-foreground">Notificaciones</h3>
                 {unreadCount > 0 && (
@@ -346,7 +351,7 @@ export function Header() {
             className="flex items-center space-x-3 cursor-pointer p-1.5 rounded-lg hover:bg-accent transition-colors"
           >
             <div className="w-8 h-8 rounded-full bg-gradient-to-tr bg-primary flex items-center justify-center border border-border">
-              <span className="text-xs font-medium text-foreground">BP</span>
+              <span className="text-xs font-medium text-primary-foreground">BP</span>
             </div>
             <div className="hidden md:block text-left">
               <p className="text-sm font-medium text-foreground">Bernal Photo</p>

@@ -213,92 +213,150 @@ export function ClientTable({ dossiers: initialDossiers }: ClientTableProps) {
           </div>
         </div>
       )}
-
-      {/* Tabla */}
+      {/* Content */}
       <div className="rounded-md border border-border bg-black/20 overflow-hidden glass-card">
-        <table className="w-full text-sm text-left">
-          <thead className="text-xs text-muted-foreground uppercase bg-muted">
-            <tr>
-              <th className="px-6 py-4 font-medium">Cliente</th>
-              <th className="px-6 py-4 font-medium">Contacto</th>
-              <th className="px-6 py-4 font-medium hidden md:table-cell">Registro</th>
-              <th className="px-6 py-4 font-medium text-right">Expediente</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-white/5">
-            {initialDossiers.length === 0 ? (
+        
+        {/* Desktop Table */}
+        <div className="hidden md:block overflow-x-auto">
+          <table className="w-full text-sm text-left">
+            <thead className="text-xs text-muted-foreground uppercase bg-muted">
               <tr>
-                <td colSpan={4} className="px-6 py-12 text-center text-muted-foreground">
-                  No hay clientes registrados.
-                </td>
+                <th className="px-6 py-4 font-medium">Cliente</th>
+                <th className="px-6 py-4 font-medium">Contacto</th>
+                <th className="px-6 py-4 font-medium hidden md:table-cell">Registro</th>
+                <th className="px-6 py-4 font-medium text-right">Expediente</th>
               </tr>
-            ) : (
-              initialDossiers.map((dossier) => {
-                const { client } = dossier;
-                return (
-                  <tr key={client.id} className="hover:bg-accent transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-card flex items-center justify-center text-foreground">
-                          <User className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <div className="font-medium text-foreground">
-                            {client.firstName} {client.lastName}
+            </thead>
+            <tbody className="divide-y divide-border/20">
+              {initialDossiers.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="px-6 py-12 text-center text-muted-foreground">
+                    No hay clientes registrados.
+                  </td>
+                </tr>
+              ) : (
+                initialDossiers.map((dossier) => {
+                  const { client } = dossier;
+                  return (
+                    <tr key={client.id} className="hover:bg-accent transition-colors">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-card flex items-center justify-center text-foreground">
+                            <User className="w-4 h-4" />
                           </div>
-                          {client.notes && (
-                            <div className="text-xs text-muted-foreground truncate max-w-[200px]">
-                              {client.notes}
+                          <div>
+                            <div className="font-medium text-foreground">
+                              {client.firstName} {client.lastName}
+                            </div>
+                            {client.notes && (
+                              <div className="text-xs text-muted-foreground truncate max-w-[200px]">
+                                {client.notes}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col gap-1">
+                          <div className="flex items-center gap-2 text-foreground">
+                            <Mail className="w-3.5 h-3.5 text-muted-foreground" />
+                            {client.email}
+                          </div>
+                          {client.phone && (
+                            <div className="flex items-center gap-2 text-muted-foreground text-xs">
+                              <Phone className="w-3.5 h-3.5 text-muted-foreground" />
+                              {client.phone}
                             </div>
                           )}
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex flex-col gap-1">
-                        <div className="flex items-center gap-2 text-foreground">
-                          <Mail className="w-3.5 h-3.5 text-muted-foreground" />
-                          {client.email}
+                      </td>
+                      <td className="px-6 py-4 hidden md:table-cell text-muted-foreground">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
+                          {new Date(client.createdAt).toLocaleDateString('es-MX')}
                         </div>
-                        {client.phone && (
-                          <div className="flex items-center gap-2 text-muted-foreground text-xs">
-                            <Phone className="w-3.5 h-3.5 text-muted-foreground" />
-                            {client.phone}
-                          </div>
-                        )}
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => handleDownloadPDF(dossier)}
+                            disabled={loadingPdf === client.id}
+                            className="p-2 text-muted-foreground hover:text-emerald-400 hover:bg-emerald-400/10 rounded-md transition-colors cursor-pointer disabled:opacity-50"
+                            title="Descargar Expediente PDF"
+                          >
+                            {loadingPdf === client.id ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Download className="w-4 h-4" />
+                            )}
+                          </button>
+                          <button className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors cursor-pointer" title="Opciones">
+                            <MoreHorizontal className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Mobile Cards */}
+        <div className="block md:hidden divide-y divide-border/20">
+          {initialDossiers.length === 0 ? (
+            <div className="p-8 text-center text-muted-foreground text-sm">No hay clientes registrados.</div>
+          ) : (
+            initialDossiers.map((dossier) => {
+              const { client } = dossier;
+              return (
+                <div key={client.id} className="p-5 flex flex-col gap-4 hover:bg-accent/30 transition-colors">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center text-foreground shrink-0">
+                      <User className="w-5 h-5" />
+                    </div>
+                    <div className="flex-1 min-w-0 pt-1">
+                      <h3 className="font-semibold text-foreground text-base truncate">{client.firstName} {client.lastName}</h3>
+                      {client.notes && <p className="text-xs text-muted-foreground truncate mt-0.5">{client.notes}</p>}
+                    </div>
+                  </div>
+
+                  <div className="bg-background/50 rounded-lg p-3 space-y-2.5 border border-border/50">
+                    <div className="flex items-center gap-2 text-foreground text-sm">
+                      <Mail className="w-4 h-4 text-muted-foreground shrink-0" />
+                      <span className="truncate">{client.email}</span>
+                    </div>
+                    {client.phone && (
+                      <div className="flex items-center gap-2 text-foreground text-sm">
+                        <Phone className="w-4 h-4 text-muted-foreground shrink-0" />
+                        <span>{client.phone}</span>
                       </div>
-                    </td>
-                    <td className="px-6 py-4 hidden md:table-cell text-muted-foreground">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
-                        {new Date(client.createdAt).toLocaleDateString('es-MX')}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => handleDownloadPDF(dossier)}
-                          disabled={loadingPdf === client.id}
-                          className="p-2 text-muted-foreground hover:text-emerald-400 hover:bg-emerald-400/10 rounded-md transition-colors cursor-pointer disabled:opacity-50"
-                          title="Descargar Expediente PDF"
-                        >
-                          {loadingPdf === client.id ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                          ) : (
-                            <Download className="w-4 h-4" />
-                          )}
-                        </button>
-                        <button className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors cursor-pointer" title="Opciones">
-                          <MoreHorizontal className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
+                    )}
+                    <div className="flex items-center gap-2 text-muted-foreground text-xs pt-2 border-t border-border/50">
+                      <Calendar className="w-3.5 h-3.5" />
+                      Registro: {new Date(client.createdAt).toLocaleDateString('es-MX')}
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2 mt-1">
+                    <button
+                      onClick={() => handleDownloadPDF(dossier)}
+                      disabled={loadingPdf === client.id}
+                      className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 text-sm font-medium transition-colors disabled:opacity-50 cursor-pointer"
+                    >
+                      {loadingPdf === client.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+                      Expediente PDF
+                    </button>
+                    <button className="flex items-center justify-center p-2.5 rounded-lg bg-muted text-foreground hover:bg-accent transition-colors cursor-pointer shrink-0">
+                      <MoreHorizontal className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
       </div>
     </div>
   );
