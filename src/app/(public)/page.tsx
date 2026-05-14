@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { PublicNavbar } from '@/presentation/components/public/PublicNavbar';
 import { HeroSection } from '@/presentation/components/public/HeroSection';
 import { AboutPhotographerSection } from '@/presentation/components/public/AboutPhotographerSection';
+import { TestimonialsSection } from '@/presentation/components/public/TestimonialsSection';
 import { supabase } from '@/infrastructure/supabase/client';
 
 // Fallback data en caso de que la DB no esté conectada aún
@@ -36,6 +37,8 @@ export default async function PublicPortfolioPage() {
       <HeroSection />
       
       <AboutPhotographerSection />
+
+      <TestimonialsSection />
 
       {/* Portfolio Call to Action */}
       <section className="py-24 bg-background flex flex-col items-center justify-center text-center px-4">

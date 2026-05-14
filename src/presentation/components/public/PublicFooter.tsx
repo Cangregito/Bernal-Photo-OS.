@@ -93,6 +93,12 @@ export function PublicFooter() {
 
             {/* Col 2 */}
             <div className="flex flex-col space-y-4">
+              <Link href="/pricing" className="text-[9px] font-medium tracking-[0.3em] uppercase hover:text-white transition-colors">
+                INVERSIÓN
+              </Link>
+              <Link href="/faq" className="text-[9px] font-medium tracking-[0.3em] uppercase hover:text-white transition-colors">
+                FAQ
+              </Link>
               <Link href="/contact" className="text-[9px] font-medium tracking-[0.3em] uppercase hover:text-white transition-colors">
                 CONTACT
               </Link>

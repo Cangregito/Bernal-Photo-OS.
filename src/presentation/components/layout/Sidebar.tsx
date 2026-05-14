@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Users, Camera, FileText, Settings, LogOut } from 'lucide-react';
+import { LayoutDashboard, Users, Camera, FileText, Settings, LogOut, Globe, Image, Star, DollarSign, SlidersHorizontal, BookOpen } from 'lucide-react';
 import { createBrowserClient } from '@supabase/ssr';
 
 const navigation = [
@@ -11,6 +11,14 @@ const navigation = [
   { name: 'Sesiones', href: '/dashboard/sessions', icon: Camera },
   { name: 'Cotizaciones', href: '/dashboard/quotes', icon: FileText },
   { name: 'Contratos', href: '/dashboard/contracts', icon: FileText },
+];
+
+const websiteNav = [
+  { name: 'Hero / Slider', href: '/dashboard/website/hero', icon: SlidersHorizontal },
+  { name: 'Portafolio', href: '/dashboard/website/portfolio', icon: Image },
+  { name: 'Testimonios', href: '/dashboard/website/testimonials', icon: Star },
+  { name: 'Paquetes', href: '/dashboard/website/packages', icon: DollarSign },
+  { name: 'Blog', href: '/dashboard/website/blog', icon: BookOpen },
 ];
 
 export function Sidebar() {
@@ -64,6 +72,37 @@ export function Sidebar() {
             </Link>
           );
         })}
+
+        {/* Website CMS Section */}
+        <div className="pt-4 mt-4 border-t border-border">
+          <div className="flex items-center px-3 py-2 mb-1">
+            <Globe className="w-4 h-4 mr-2 text-muted-foreground" />
+            <span className="text-xs font-semibold tracking-wider uppercase text-muted-foreground">
+              Sitio Web
+            </span>
+          </div>
+          {websiteNav.map((item) => {
+            const Icon = item.icon;
+            const active = isActive(item.href);
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={`flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors group ${
+                  active
+                    ? 'bg-accent text-foreground'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                }`}
+              >
+                <Icon className={`w-4 h-4 mr-3 transition-colors ${
+                  active ? 'text-emerald-400' : 'text-muted-foreground group-hover:text-foreground'
+                }`} />
+                {item.name}
+                {active && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-400" />}
+              </Link>
+            );
+          })}
+        </div>
       </nav>
 
       {/* Bottom Section */}

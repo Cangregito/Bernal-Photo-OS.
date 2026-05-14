@@ -9,8 +9,18 @@ import { cn } from "@/lib/utils";
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
-  title: "Bernal Photo",
-  description: "Plataforma Integral de Gestión y Fotografía Profesional",
+  title: {
+    default: 'Bernal Photo — Fotógrafo de Bodas en Ciudad Juárez',
+    template: '%s | Bernal Photo',
+  },
+  description: 'Fotografía profesional de bodas, retratos y eventos en Ciudad Juárez, Chihuahua. Estilo editorial con integridad documental SHA-256.',
+  keywords: ['fotógrafo de bodas', 'Ciudad Juárez', 'fotografía profesional', 'Chihuahua', 'boda', 'retrato', 'editorial'],
+  authors: [{ name: 'Jassiel Bernal', url: 'https://bernalphoto.com' }],
+  openGraph: {
+    type: 'website',
+    locale: 'es_MX',
+    siteName: 'Bernal Photo',
+  },
 };
 
 export default function RootLayout({
