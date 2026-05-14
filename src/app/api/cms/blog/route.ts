@@ -1,29 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
-
-async function getSupabase() {
-  const cookieStore = await cookies();
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() { return cookieStore.getAll(); },
-        setAll(cookiesToSet) {
-          try { cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options)); } catch {}
-        },
-      },
-    }
-  );
-}
-
-async function requireAuth() {
-  const supabase = await getSupabase();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Unauthorized');
-  return supabase;
-}
+import { getSupabase, requireAuth, handleError } from '../_helpers';
 
 export async function GET() {
   try {
@@ -34,8 +10,8 @@ export async function GET() {
       .order('published_at', { ascending: false, nullsFirst: false });
     if (error) throw error;
     return NextResponse.json(data);
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    return handleError(err);
   }
 }
 
@@ -46,12 +22,9 @@ export async function POST(request: NextRequest) {
     const { data, error } = await supabase
       .from('blog_posts')
       .insert({
-        slug: body.slug,
-        title: body.title,
-        excerpt: body.excerpt || null,
-        content: body.content || null,
-        cover_image: body.cover_image || null,
-        category: body.category || null,
+        slug: body.slug, title: body.title,
+        excerpt: body.excerpt || null, content: body.content || null,
+        cover_image: body.cover_image || null, category: body.category || null,
         is_published: body.is_published ?? false,
         published_at: body.published_at || null,
         testimonial_quote: body.testimonial_quote || null,
@@ -60,8 +33,8 @@ export async function POST(request: NextRequest) {
       .select().single();
     if (error) throw error;
     return NextResponse.json(data, { status: 201 });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: err.message === 'Unauthorized' ? 401 : 500 });
+  } catch (err: unknown) {
+    return handleError(err);
   }
 }
 
@@ -82,8 +55,8 @@ export async function PUT(request: NextRequest) {
       .eq('id', body.id).select().single();
     if (error) throw error;
     return NextResponse.json(data);
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: err.message === 'Unauthorized' ? 401 : 500 });
+  } catch (err: unknown) {
+    return handleError(err);
   }
 }
 
@@ -96,7 +69,7 @@ export async function DELETE(request: NextRequest) {
     const { error } = await supabase.from('blog_posts').delete().eq('id', id);
     if (error) throw error;
     return NextResponse.json({ success: true });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: err.message === 'Unauthorized' ? 401 : 500 });
+  } catch (err: unknown) {
+    return handleError(err);
   }
 }

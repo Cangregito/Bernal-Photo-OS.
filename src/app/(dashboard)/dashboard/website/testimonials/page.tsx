@@ -23,17 +23,22 @@ export default function TestimonialsPage() {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(emptyForm);
 
-  const fetchItems = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch('/api/cms/testimonials');
-      const data = await res.json();
-      if (Array.isArray(data)) setItems(data);
-    } catch { /* skip */ }
-    setLoading(false);
-  };
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  useEffect(() => { fetchItems(); }, []);
+  useEffect(() => {
+    const controller = new AbortController();
+    (async () => {
+      try {
+        const res = await fetch('/api/cms/testimonials', { signal: controller.signal });
+        const data = await res.json();
+        if (Array.isArray(data)) setItems(data);
+      } catch { /* skip */ }
+      setLoading(false);
+    })();
+    return () => controller.abort();
+  }, [refreshKey]);
+
+  const refetch = () => { setLoading(true); setRefreshKey((k) => k + 1); };
 
   const handleSave = async () => {
     setSaving(true);
@@ -48,7 +53,7 @@ export default function TestimonialsPage() {
       setShowForm(false);
       setEditId(null);
       setForm(emptyForm);
-      await fetchItems();
+      refetch();
     } catch { /* skip */ }
     setSaving(false);
   };
@@ -56,7 +61,7 @@ export default function TestimonialsPage() {
   const handleDelete = async (id: string) => {
     if (!confirm('¿Eliminar este testimonio?')) return;
     await fetch(`/api/cms/testimonials?id=${id}`, { method: 'DELETE' });
-    await fetchItems();
+    refetch();
   };
 
   const handleEdit = (item: Testimonial) => {

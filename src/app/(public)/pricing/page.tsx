@@ -4,10 +4,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { PublicNavbar } from '@/presentation/components/public/PublicNavbar';
 import { TestimonialsSection } from '@/presentation/components/public/TestimonialsSection';
-import { Camera, Heart, Star, Clock, Sparkles, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { Sparkles, Loader2 } from 'lucide-react';
 import { supabase } from '@/infrastructure/supabase/client';
-
-const iconMap: Record<string, typeof Clock> = { Clock, ImageIcon, Camera, Star, Sparkles, Heart };
 
 interface DbPackage {
   id: string;

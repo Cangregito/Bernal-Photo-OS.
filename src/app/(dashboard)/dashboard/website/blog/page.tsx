@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Plus, Trash2, Edit3, Save, X, Loader2, Eye, EyeOff, BookOpen } from 'lucide-react';
 
 interface BlogPost {
@@ -30,17 +31,22 @@ export default function BlogPage() {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(emptyForm);
 
-  const fetchItems = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch('/api/cms/blog');
-      const data = await res.json();
-      if (Array.isArray(data)) setItems(data);
-    } catch { /* skip */ }
-    setLoading(false);
-  };
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  useEffect(() => { fetchItems(); }, []);
+  useEffect(() => {
+    const controller = new AbortController();
+    (async () => {
+      try {
+        const res = await fetch('/api/cms/blog', { signal: controller.signal });
+        const data = await res.json();
+        if (Array.isArray(data)) setItems(data);
+      } catch { /* skip */ }
+      setLoading(false);
+    })();
+    return () => controller.abort();
+  }, [refreshKey]);
+
+  const refetch = () => { setLoading(true); setRefreshKey((k) => k + 1); };
 
   const generateSlug = (title: string) => {
     return title.toLowerCase()
@@ -57,7 +63,7 @@ export default function BlogPage() {
         : { ...form, published_at: form.is_published ? new Date().toISOString() : null };
       await fetch('/api/cms/blog', { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       setShowForm(false); setEditId(null); setForm(emptyForm);
-      await fetchItems();
+      refetch();
     } catch { /* skip */ }
     setSaving(false);
   };
@@ -65,7 +71,7 @@ export default function BlogPage() {
   const handleDelete = async (id: string) => {
     if (!confirm('¿Eliminar este post?')) return;
     await fetch(`/api/cms/blog?id=${id}`, { method: 'DELETE' });
-    await fetchItems();
+    refetch();
   };
 
   const handleEdit = (item: BlogPost) => {
@@ -197,8 +203,8 @@ export default function BlogPage() {
               item.is_published ? 'border-border bg-card' : 'border-border/50 bg-card/50'
             }`}>
               {item.cover_image && (
-                <div className="w-32 h-20 flex-shrink-0 bg-muted">
-                  <img src={item.cover_image} alt={item.title} className="w-full h-full object-cover" />
+                <div className="w-32 h-20 flex-shrink-0 bg-muted relative">
+                  <Image src={item.cover_image} alt={item.title} fill className="object-cover" sizes="128px" />
                 </div>
               )}
               <div className="flex-1 py-3 min-w-0">

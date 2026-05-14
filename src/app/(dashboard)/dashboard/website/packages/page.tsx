@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Trash2, Edit3, Save, X, Loader2, Eye, EyeOff, DollarSign, GripVertical, Star } from 'lucide-react';
+import { Plus, Trash2, Edit3, Save, X, Loader2, Eye, EyeOff, DollarSign } from 'lucide-react';
 
 interface Package {
   id: string;
@@ -28,17 +28,22 @@ export default function PackagesPage() {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(emptyForm);
 
-  const fetchItems = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch('/api/cms/packages');
-      const data = await res.json();
-      if (Array.isArray(data)) setItems(data);
-    } catch { /* skip */ }
-    setLoading(false);
-  };
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  useEffect(() => { fetchItems(); }, []);
+  useEffect(() => {
+    const controller = new AbortController();
+    (async () => {
+      try {
+        const res = await fetch('/api/cms/packages', { signal: controller.signal });
+        const data = await res.json();
+        if (Array.isArray(data)) setItems(data);
+      } catch { /* skip */ }
+      setLoading(false);
+    })();
+    return () => controller.abort();
+  }, [refreshKey]);
+
+  const refetch = () => { setLoading(true); setRefreshKey((k) => k + 1); };
 
   const handleSave = async () => {
     setSaving(true);
@@ -53,7 +58,7 @@ export default function PackagesPage() {
       setShowForm(false);
       setEditId(null);
       setForm(emptyForm);
-      await fetchItems();
+      refetch();
     } catch { /* skip */ }
     setSaving(false);
   };
@@ -61,7 +66,7 @@ export default function PackagesPage() {
   const handleDelete = async (id: string) => {
     if (!confirm('¿Eliminar este paquete?')) return;
     await fetch(`/api/cms/packages?id=${id}`, { method: 'DELETE' });
-    await fetchItems();
+    refetch();
   };
 
   const handleEdit = (item: Package) => {

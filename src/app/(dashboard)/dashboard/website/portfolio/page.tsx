@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Trash2, Edit3, Save, X, Loader2, Eye, EyeOff, Image as ImageIcon, GripVertical } from 'lucide-react';
+import Image from 'next/image';
+import { Plus, Trash2, Edit3, Save, X, Loader2, Eye, EyeOff, Image as ImageIcon } from 'lucide-react';
 
 interface PortfolioImage {
   id: string;
@@ -21,17 +22,22 @@ export default function PortfolioPage() {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(emptyForm);
 
-  const fetchItems = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch('/api/cms/portfolio');
-      const data = await res.json();
-      if (Array.isArray(data)) setItems(data);
-    } catch { /* skip */ }
-    setLoading(false);
-  };
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  useEffect(() => { fetchItems(); }, []);
+  useEffect(() => {
+    const controller = new AbortController();
+    (async () => {
+      try {
+        const res = await fetch('/api/cms/portfolio', { signal: controller.signal });
+        const data = await res.json();
+        if (Array.isArray(data)) setItems(data);
+      } catch { /* skip */ }
+      setLoading(false);
+    })();
+    return () => controller.abort();
+  }, [refreshKey]);
+
+  const refetch = () => { setLoading(true); setRefreshKey((k) => k + 1); };
 
   const handleSave = async () => {
     setSaving(true);
@@ -46,7 +52,7 @@ export default function PortfolioPage() {
       setShowForm(false);
       setEditId(null);
       setForm(emptyForm);
-      await fetchItems();
+      refetch();
     } catch { /* skip */ }
     setSaving(false);
   };
@@ -54,7 +60,7 @@ export default function PortfolioPage() {
   const handleDelete = async (id: string) => {
     if (!confirm('¿Eliminar esta imagen?')) return;
     await fetch(`/api/cms/portfolio?id=${id}`, { method: 'DELETE' });
-    await fetchItems();
+    refetch();
   };
 
   const handleEdit = (item: PortfolioImage) => {
@@ -98,7 +104,7 @@ export default function PortfolioPage() {
 
             {form.image_url && (
               <div className="relative w-48 h-32 bg-muted rounded-lg overflow-hidden">
-                <img src={form.image_url} alt="Preview" className="w-full h-full object-cover" />
+                <Image src={form.image_url} alt="Preview" fill className="object-cover" sizes="192px" />
               </div>
             )}
 
@@ -149,8 +155,8 @@ export default function PortfolioPage() {
             <div key={item.id} className={`relative group rounded-xl overflow-hidden border transition-all ${
               item.is_active ? 'border-border' : 'border-border/50 opacity-50'
             }`}>
-              <div className="aspect-square bg-muted">
-                <img src={item.image_url} alt={item.alt_text} className="w-full h-full object-cover" />
+              <div className="aspect-square bg-muted relative">
+                <Image src={item.image_url} alt={item.alt_text} fill className="object-cover" sizes="(max-width: 768px) 50vw, 25vw" />
               </div>
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/60 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
                 <button onClick={() => handleEdit(item)} className="p-2.5 bg-white/20 hover:bg-white/40 rounded-lg text-white transition-colors">

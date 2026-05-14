@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Plus, Trash2, Edit3, Save, X, Loader2, Eye, EyeOff, SlidersHorizontal } from 'lucide-react';
 
 interface HeroSlide {
@@ -22,17 +23,22 @@ export default function HeroPage() {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(emptyForm);
 
-  const fetchItems = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch('/api/cms/hero');
-      const data = await res.json();
-      if (Array.isArray(data)) setItems(data);
-    } catch { /* skip */ }
-    setLoading(false);
-  };
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  useEffect(() => { fetchItems(); }, []);
+  useEffect(() => {
+    const controller = new AbortController();
+    (async () => {
+      try {
+        const res = await fetch('/api/cms/hero', { signal: controller.signal });
+        const data = await res.json();
+        if (Array.isArray(data)) setItems(data);
+      } catch { /* skip */ }
+      setLoading(false);
+    })();
+    return () => controller.abort();
+  }, [refreshKey]);
+
+  const refetch = () => { setLoading(true); setRefreshKey((k) => k + 1); };
 
   const handleSave = async () => {
     setSaving(true);
@@ -41,7 +47,7 @@ export default function HeroPage() {
       const body = editId ? { ...form, id: editId } : form;
       await fetch('/api/cms/hero', { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       setShowForm(false); setEditId(null); setForm(emptyForm);
-      await fetchItems();
+      refetch();
     } catch { /* skip */ }
     setSaving(false);
   };
@@ -49,7 +55,7 @@ export default function HeroPage() {
   const handleDelete = async (id: string) => {
     if (!confirm('¿Eliminar este slide?')) return;
     await fetch(`/api/cms/hero?id=${id}`, { method: 'DELETE' });
-    await fetchItems();
+    refetch();
   };
 
   const handleEdit = (item: HeroSlide) => {
@@ -86,8 +92,8 @@ export default function HeroPage() {
             </div>
             {form.image_url && (
               <div className="relative w-full h-40 bg-muted rounded-lg overflow-hidden">
-                <img src={form.image_url} alt="Preview" className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                <Image src={form.image_url} alt="Preview" fill className="object-cover" sizes="100vw" />
+                <div className="absolute inset-0 bg-black/30 flex items-center justify-center z-10">
                   <div className="text-center text-white">
                     <p className="text-lg font-serif">{form.title || 'Título aquí'}</p>
                     <p className="text-xs tracking-widest uppercase mt-1">{form.subtitle || 'Subtítulo'}</p>
@@ -145,8 +151,8 @@ export default function HeroPage() {
             <div key={item.id} className={`flex items-center gap-4 border rounded-xl overflow-hidden transition-colors ${
               item.is_active ? 'border-border bg-card' : 'border-border/50 bg-card/50 opacity-50'
             }`}>
-              <div className="w-48 h-28 flex-shrink-0 bg-muted">
-                <img src={item.image_url} alt={item.title || `Slide ${idx + 1}`} className="w-full h-full object-cover" />
+              <div className="w-48 h-28 flex-shrink-0 bg-muted relative">
+                <Image src={item.image_url} alt={item.title || `Slide ${idx + 1}`} fill className="object-cover" sizes="192px" />
               </div>
               <div className="flex-1 py-3">
                 <p className="text-sm font-medium text-foreground">{item.title || '(Sin título)'}</p>

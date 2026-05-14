@@ -1,29 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
-
-async function getSupabase() {
-  const cookieStore = await cookies();
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() { return cookieStore.getAll(); },
-        setAll(cookiesToSet) {
-          try { cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options)); } catch {}
-        },
-      },
-    }
-  );
-}
-
-async function requireAuth() {
-  const supabase = await getSupabase();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Unauthorized');
-  return supabase;
-}
+import { getSupabase, requireAuth, handleError } from '../_helpers';
 
 export async function GET() {
   try {
@@ -34,8 +10,8 @@ export async function GET() {
       .order('display_order', { ascending: true });
     if (error) throw error;
     return NextResponse.json(data);
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    return handleError(err);
   }
 }
 
@@ -46,17 +22,15 @@ export async function POST(request: NextRequest) {
     const { data, error } = await supabase
       .from('hero_slides')
       .insert({
-        image_url: body.image_url,
-        title: body.title || null,
-        subtitle: body.subtitle || null,
-        is_active: body.is_active ?? true,
+        image_url: body.image_url, title: body.title || null,
+        subtitle: body.subtitle || null, is_active: body.is_active ?? true,
         display_order: body.display_order ?? 0,
       })
       .select().single();
     if (error) throw error;
     return NextResponse.json(data, { status: 201 });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: err.message === 'Unauthorized' ? 401 : 500 });
+  } catch (err: unknown) {
+    return handleError(err);
   }
 }
 
@@ -75,8 +49,8 @@ export async function PUT(request: NextRequest) {
       .eq('id', body.id).select().single();
     if (error) throw error;
     return NextResponse.json(data);
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: err.message === 'Unauthorized' ? 401 : 500 });
+  } catch (err: unknown) {
+    return handleError(err);
   }
 }
 
@@ -89,7 +63,7 @@ export async function DELETE(request: NextRequest) {
     const { error } = await supabase.from('hero_slides').delete().eq('id', id);
     if (error) throw error;
     return NextResponse.json({ success: true });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: err.message === 'Unauthorized' ? 401 : 500 });
+  } catch (err: unknown) {
+    return handleError(err);
   }
 }
