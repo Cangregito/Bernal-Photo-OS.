@@ -26,6 +26,7 @@ export async function POST(request: NextRequest) {
         couple_name: body.couple_name,
         session_type: body.session_type || null,
         location: body.location || null,
+        photo_url: body.photo_url || null,
         is_active: body.is_active ?? true,
         display_order: body.display_order ?? 0,
       })
@@ -48,6 +49,7 @@ export async function PUT(request: NextRequest) {
       .update({
         quote: body.quote, couple_name: body.couple_name,
         session_type: body.session_type, location: body.location,
+        photo_url: body.photo_url,
         is_active: body.is_active, display_order: body.display_order,
         updated_at: new Date().toISOString(),
       })

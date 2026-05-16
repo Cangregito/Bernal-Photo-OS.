@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Plus, Trash2, Edit3, Save, X, Loader2, Eye, EyeOff, BookOpen } from 'lucide-react';
+import { ImageUploader } from '@/presentation/components/ui/ImageUploader';
 
 interface BlogPost {
   id: string;
@@ -132,12 +133,15 @@ export default function BlogPage() {
                   <option value="Guías">Guías</option>
                 </select>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-1.5">Imagen de portada (URL)</label>
-                <input type="text" value={form.cover_image} onChange={(e) => setForm({ ...form, cover_image: e.target.value })}
-                  className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
-                  placeholder="https://..." />
-              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-muted-foreground mb-1.5">Imagen de portada</label>
+              <ImageUploader 
+                defaultValue={form.cover_image} 
+                onUpload={(url) => setForm({ ...form, cover_image: url })} 
+                folder="blog" 
+              />
             </div>
 
             <div>

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Plus, Trash2, Edit3, Save, X, Loader2, Eye, EyeOff, SlidersHorizontal } from 'lucide-react';
+import { ImageUploader } from '@/presentation/components/ui/ImageUploader';
 
 interface HeroSlide {
   id: string;
@@ -85,22 +86,13 @@ export default function HeroPage() {
           </div>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1.5">URL de la imagen *</label>
-              <input type="text" value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })}
-                className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
-                placeholder="https://...supabase.co/storage/v1/.../hero.jpg" />
+              <label className="block text-sm font-medium text-muted-foreground mb-1.5">Imagen del Hero *</label>
+              <ImageUploader 
+                defaultValue={form.image_url} 
+                onUpload={(url) => setForm({ ...form, image_url: url })} 
+                folder="hero" 
+              />
             </div>
-            {form.image_url && (
-              <div className="relative w-full h-40 bg-muted rounded-lg overflow-hidden">
-                <Image src={form.image_url} alt="Preview" fill className="object-cover" sizes="100vw" />
-                <div className="absolute inset-0 bg-black/30 flex items-center justify-center z-10">
-                  <div className="text-center text-white">
-                    <p className="text-lg font-serif">{form.title || 'Título aquí'}</p>
-                    <p className="text-xs tracking-widest uppercase mt-1">{form.subtitle || 'Subtítulo'}</p>
-                  </div>
-                </div>
-              </div>
-            )}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-muted-foreground mb-1.5">Título (opcional)</label>

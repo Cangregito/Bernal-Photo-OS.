@@ -1,6 +1,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // ─── Image Optimization (Supabase Storage) ─────────────
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'ogfptxtxilmrssvhlrbd.supabase.co',
+        pathname: '/storage/v1/object/public/**',
+      },
+    ],
+  },
   // ─── Security Headers (MAESTER §8) ────────────────────
   async headers() {
     return [

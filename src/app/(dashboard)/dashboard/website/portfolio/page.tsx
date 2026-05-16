@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Plus, Trash2, Edit3, Save, X, Loader2, Eye, EyeOff, Image as ImageIcon } from 'lucide-react';
+import { ImageUploader } from '@/presentation/components/ui/ImageUploader';
 
 interface PortfolioImage {
   id: string;
@@ -95,18 +96,13 @@ export default function PortfolioPage() {
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1.5">URL de la imagen *</label>
-              <input type="text" value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })}
-                className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
-                placeholder="https://...supabase.co/storage/v1/.../foto.jpg" />
-              <p className="text-xs text-muted-foreground/50 mt-1">Sube la imagen a Supabase Storage y pega la URL pública aquí.</p>
+              <label className="block text-sm font-medium text-muted-foreground mb-1.5">Fotografía *</label>
+              <ImageUploader 
+                defaultValue={form.image_url} 
+                onUpload={(url) => setForm({ ...form, image_url: url })} 
+                folder="portfolio" 
+              />
             </div>
-
-            {form.image_url && (
-              <div className="relative w-48 h-32 bg-muted rounded-lg overflow-hidden">
-                <Image src={form.image_url} alt="Preview" fill className="object-cover" sizes="192px" />
-              </div>
-            )}
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>

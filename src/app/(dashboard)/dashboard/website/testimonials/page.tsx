@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Plus, Trash2, Edit3, Save, X, Loader2, GripVertical, Eye, EyeOff, Star } from 'lucide-react';
+import { ImageUploader } from '@/presentation/components/ui/ImageUploader';
 
 interface Testimonial {
   id: string;
@@ -9,11 +10,12 @@ interface Testimonial {
   couple_name: string;
   session_type: string;
   location: string;
+  photo_url?: string;
   is_active: boolean;
   display_order: number;
 }
 
-const emptyForm = { quote: '', couple_name: '', session_type: '', location: '', is_active: true, display_order: 0 };
+const emptyForm = { quote: '', couple_name: '', session_type: '', location: '', photo_url: '', is_active: true, display_order: 0 };
 
 export default function TestimonialsPage() {
   const [items, setItems] = useState<Testimonial[]>([]);
@@ -71,6 +73,7 @@ export default function TestimonialsPage() {
       couple_name: item.couple_name,
       session_type: item.session_type || '',
       location: item.location || '',
+      photo_url: item.photo_url || '',
       is_active: item.is_active,
       display_order: item.display_order,
     });
@@ -107,8 +110,18 @@ export default function TestimonialsPage() {
           </div>
 
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-muted-foreground mb-1.5">Testimonio *</label>
+            <div className="grid grid-cols-1 md:grid-cols-[200px,1fr] gap-6">
+              <div>
+                <label className="block text-sm font-medium text-muted-foreground mb-1.5">Foto de la Pareja</label>
+                <ImageUploader 
+                  defaultValue={form.photo_url} 
+                  onUpload={(url) => setForm({ ...form, photo_url: url })} 
+                  folder="testimonials" 
+                />
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-muted-foreground mb-1.5">Testimonio *</label>
               <textarea
                 value={form.quote}
                 onChange={(e) => setForm({ ...form, quote: e.target.value })}
@@ -116,6 +129,8 @@ export default function TestimonialsPage() {
                 className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/30 resize-none"
                 placeholder="Las fotografías superaron todas nuestras expectativas..."
               />
+                </div>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
