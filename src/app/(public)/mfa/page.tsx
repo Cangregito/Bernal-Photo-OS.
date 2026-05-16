@@ -286,7 +286,7 @@ export default function MfaPage() {
               ) : (
                 <div className="mt-6 grid gap-6 md:grid-cols-[220px,1fr]">
                   <div className="rounded-2xl border border-border bg-white p-4">
-                    <Image src={qrCode} alt="Código QR para MFA" width={256} height={256} className="h-full w-full" unoptimized />
+                    <Image src={qrCode?.startsWith('data:') ? qrCode : `data:image/svg+xml;utf8,${encodeURIComponent(qrCode || '')}`} alt="Código QR para MFA" width={256} height={256} className="h-full w-full" unoptimized />
                   </div>
                   <div className="space-y-4">
                     <div>
