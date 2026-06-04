@@ -608,17 +608,6 @@ export function DashboardPanel({ data }: { data: DashboardData }) {
               />
             </div>
           </div>
-
-          {/* Tarjeta de Recomendación de Optimización (Foco Entrevista) */}
-          <div className="glass-card rounded-xl p-5 border border-border bg-gradient-to-br from-amber-500/5 to-transparent">
-            <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-              <Clock className="w-4 h-4" /> Recomendación de Eficiencia (Simulación de Cuello de Botella)
-            </h4>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              En los meses de **Noviembre y Diciembre** (temporada alta), el tiempo promedio de entrega del SLA aumenta a **19 días** y la relación de horas de edición sube a **2.3x**. 
-              <span className="block mt-1 font-semibold text-foreground">Acción recomendada:</span> Considerar la externalización (outsourcing) de la edición inicial de catálogo o implementar plantillas de revelado rápido durante el Q4 para bajar el SLA a menos de 10 días y mitigar la fatiga operativa.
-            </p>
-          </div>
         </div>
       )}
     </div>

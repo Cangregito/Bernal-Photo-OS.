@@ -479,7 +479,7 @@ export function ExpensePieChart({ data }: ExpensePieChartProps) {
                 strokeDashoffset={seg.strokeDashoffset}
                 transform={`rotate(${seg.rotationAngle} ${size / 2} ${size / 2})`}
                 strokeLinecap="round"
-                className="cursor-pointer transition-all duration-300 ease-out origin-center"
+                className="cursor-pointer transition-[stroke-width] duration-200 ease-out"
                 onMouseEnter={() => setHoveredIdx(idx)}
                 onMouseLeave={() => setHoveredIdx(null)}
               />
