@@ -34,52 +34,59 @@ export default function MfaPage() {
       return;
     }
 
-    const supabase = createBrowserClient(supabaseUrl!, supabaseAnonKey!);
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    try {
+      const supabase = createBrowserClient(supabaseUrl!, supabaseAnonKey!);
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
 
-    if (!user) {
-      router.replace(`/login?redirect=${encodeURIComponent(nextPath)}`);
-      return;
-    }
+      if (userError || !user) {
+        router.replace(`/login?redirect=${encodeURIComponent(nextPath)}`);
+        return;
+      }
 
-    const [{ data: profile }, { data: factors }, { data: assurance }] = await Promise.all([
-      supabase.from('profiles').select('role').eq('id', user.id).maybeSingle(),
-      supabase.auth.mfa.listFactors(),
-      supabase.auth.mfa.getAuthenticatorAssuranceLevel(),
-    ]);
+      const [{ data: profile }, { data: factors }, { data: assurance }] = await Promise.all([
+        supabase.from('profiles').select('role').eq('id', user.id).maybeSingle(),
+        supabase.auth.mfa.listFactors(),
+        supabase.auth.mfa.getAuthenticatorAssuranceLevel(),
+      ]);
 
-    if (profile?.role !== 'admin') {
-      router.replace(nextPath);
-      return;
-    }
+      if (profile?.role !== 'admin') {
+        router.replace(nextPath);
+        return;
+      }
 
-    const verifiedFactorId = Array.isArray(factors?.totp) && factors.totp.length > 0
-      ? String((factors.totp[0] as { id: string }).id)
-      : null;
+      const verifiedFactorId = Array.isArray(factors?.totp) && factors.totp.length > 0
+        ? String((factors.totp[0] as { id: string }).id)
+        : null;
 
-    if (assurance?.currentLevel === 'aal2') {
-      setMode('active');
+      if (assurance?.currentLevel === 'aal2') {
+        setMode('active');
+        setFactorId(verifiedFactorId);
+        setQrCode(null);
+        setSecret(null);
+        setLoading(false);
+        return;
+      }
+
+      if (verifiedFactorId) {
+        setMode('verify');
+        setFactorId(verifiedFactorId);
+        setQrCode(null);
+        setSecret(null);
+        setLoading(false);
+        return;
+      }
+
+      setMode('setup');
       setFactorId(verifiedFactorId);
-      setQrCode(null);
-      setSecret(null);
       setLoading(false);
-      return;
-    }
-
-    if (verifiedFactorId) {
-      setMode('verify');
-      setFactorId(verifiedFactorId);
-      setQrCode(null);
-      setSecret(null);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(msg || 'Error al cargar el estado MFA. Por favor, recarga la página.');
       setLoading(false);
-      return;
     }
-
-    setMode('setup');
-    setFactorId(verifiedFactorId);
-    setLoading(false);
   }
 
   useEffect(() => {
@@ -180,32 +187,27 @@ export default function MfaPage() {
       } = await supabase.auth.getUser();
 
       if (user) {
-        const { data: profile, error: profileReadError } = await supabase
+        // Update twoFactorAuth metadata. This is best-effort: errors are
+        // intentionally swallowed because the session is already at AAL2 and
+        // a metadata write failure must not block access to the dashboard.
+        const { data: profile } = await supabase
           .from('profiles')
           .select('settings')
           .eq('id', user.id)
           .single();
-
-        if (profileReadError) {
-          throw profileReadError;
-        }
 
         const nextSettings = {
           ...(profile?.settings ?? {}),
           twoFactorAuth: true,
         };
 
-        const { error: profileError } = await supabase
+        await supabase
           .from('profiles')
           .update({
             settings: nextSettings,
             updated_at: new Date().toISOString(),
           })
           .eq('id', user.id);
-
-        if (profileError) {
-          throw profileError;
-        }
       }
 
       setMode('active');

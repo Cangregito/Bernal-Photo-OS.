@@ -90,13 +90,7 @@ export async function getServerAuthContext() {
     };
   }
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  const { data: assurance } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel(
-    session?.access_token
-  );
+  const { data: assurance } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
 
   const { data: profile } = await supabase
     .from('profiles')
